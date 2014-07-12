@@ -1,0 +1,18 @@
+body {
+    padding-top: 55px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+#dashboard {
+    display: none;
+}
+#note {
+    display: none;
+}
+#task {
+    display: none;
+}
+#note {
+    display: none;
+}
+
