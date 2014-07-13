@@ -1,3 +1,30 @@
+var COLORS = [
+    {
+        borderColor: "#3a87ad",
+        backgroundColor: "#3a87ad",
+        textColor: "white",
+        unconfirmedColor: "#a2bac6",
+    },
+    {
+        borderColor: "#3aad52",
+        backgroundColor: "#3aad52",
+        textColor: "white",
+        unconfirmedColor: "#8ac497",
+    },
+    {
+        borderColor: "#ad3a3a",
+        backgroundColor: "#ad3a3a",
+        textColor: "white",
+        unconfirmedColor: "#dc9797",
+    },
+    {
+        borderColor: "#a9ad3a",
+        backgroundColor: "#a9ad3a",
+        textColor: "white",
+        unconfirmedColor: "#e4e797",
+    },
+];
+
 // Calendars class
 function Calendars() {
 
@@ -15,7 +42,7 @@ function Calendars() {
             });
             this.calendarList = calendarList;
             for (href_idx in this.calendarList) {
-                this.calendars[href_idx] = new Calendar(this.calendarList[href_idx]);
+                this.calendars[href_idx] = new Calendar(this.calendarList[href_idx], COLORS[href_idx]);
             }
             this.loadAllCalendars();
             callback();
@@ -31,15 +58,17 @@ function Calendars() {
 }
 
 // Calendar class
-function Calendar(href) {
+function Calendar(href, colors) {
     this.href = href;
     this.urls = [];
     this.events = {};
     this.FCevents = [];
     this.eventsCpt = 0;
     this.eventsLoaded = 0;
-    this.color = "blue";
-    this.textColor = "white";
+    this.borderColor = colors["borderColor"];
+    this.backgroundColor = colors["backgroundColor"];
+    this.textColor = colors["textColor"];
+    this.unconfirmedColor = colors["unconfirmedColor"];
     this.ready = false;
 
     this.load = function (){
@@ -104,8 +133,9 @@ function Calendar(href) {
         //return this.getFCEvents;
         return {
             events: (this.getFCEvents).bind(this),
-            color: this.color,
             textColor: this.textColor,
+            backgroundColor: this.backgroundColor,
+            borderColor: this.borderColor,
         };
     }
 }
