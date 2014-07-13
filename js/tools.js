@@ -65,4 +65,9 @@ function parseDate( key, str) {
     return res;
 }
 
+function addEventSource(es){
+    console.log("Adding eventSource");
+    console.log(es);
+    $('#calendar').fullCalendar('addEventSource', es);
+}
 

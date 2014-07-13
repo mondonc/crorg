@@ -1,5 +1,4 @@
 function calendar_init() {
-
     calendar = $('#calendar').fullCalendar({
 
         header: {
@@ -12,17 +11,19 @@ function calendar_init() {
         droppable: true, // this allows things to be dropped onto the calendar !!!
         selectable: true,
         selectHelper: true,
-        events: FCEVENTS,
+        //eventSources: [],
+        //events: [],
         firstDay: 1, // first day is monday
         defaultView: "agendaWeek",
         axisFormat: 'H:mm',
         weekNumbers: true,
-        weekNumberTitle: "",
+        weekNumberTitle: "n°",
         minTime: "07:00:00",
         slotMinutes: 30,
         allDayText: "",
         aspectRatio: 0.5,
         timezone: "local",
+        //lazyFetching: false,
 
         //timeFormat: {
         // for agendaWeek and agendaDay
