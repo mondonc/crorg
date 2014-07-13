@@ -70,4 +70,3 @@ function addEventSource(es){
     console.log(es);
     $('#calendar').fullCalendar('addEventSource', es);
 }
-

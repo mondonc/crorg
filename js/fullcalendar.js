@@ -23,7 +23,7 @@ function calendar_init() {
         allDayText: "",
         aspectRatio: 0.5,
         timezone: "local",
-        //lazyFetching: false,
+        lazyFetching: false,
 
         //timeFormat: {
         // for agendaWeek and agendaDay

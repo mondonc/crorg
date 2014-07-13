@@ -89,7 +89,6 @@ function Calendar(href) {
     }
 
     this.getFCEvents = function(start, end, timezone, callback) {
-        console.log("appel getFCevent");
         if (this.ready && this.FCevents.length == 0) {
             console.log("Translating events ");
             for (var uid in this.events) {
