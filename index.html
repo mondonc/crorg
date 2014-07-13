@@ -31,19 +31,20 @@
     </div>
 
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#"><span class="glyphicon glyphicon-th"></span></a></li>
-      <li><a href="#"><span class="glyphicon glyphicon-calendar"></span></a></li>
-      <li><a href="#"><span class="glyphicon glyphicon-list-alt"></span></a></li>
-      <li><a href="#"><span class="glyphicon glyphicon-pencil"></span></a></li>
-      <li><a href="#"><span class="glyphicon glyphicon-repeat"></span></a></li>
-      <li><a href="#"><span class="glyphicon glyphicon-off"></span></a></li>
+      <li id="navdashboard" class="active"><a href="#" onclick="changeView('navdashboard');"><span class="glyphicon glyphicon-th"></span></a></li>
+      <li id="navcalendar"><a href="#" onclick="changeView('navcalendar');"><span class="glyphicon glyphicon-calendar"></span></a></li>
+      <li id="navtask"><a href="#" onclick="changeView('navtask');"><span class="glyphicon glyphicon-list-alt"></span></a></li>
+      <li id="navnote"><a href="#" onclick="changeView('navnote');"><span class="glyphicon glyphicon-pencil"></span></a></li>
+      <li id="navrefresh"><a href="#" onclick="refresh();"><span class="glyphicon glyphicon-repeat"></span></a></li>
+      <li id="navexit"><a href="#" onclick="exit();"><span class="glyphicon glyphicon-off"></span></a></li>
     </ul>
     <ul id="agendabar" class="nav navbar-nav" >
       <li><span class="progress navbar-text" style="width: 100px;">
         <span class="progress-bar progress-bar-danger" style="width: 30%;"></span>
       </span></li>
-      <li><a href="#" onclick="$('#calendar').fullCalendar('prev')"><span class="glyphicon glyphicon-backward"></span></a></li>
-      <li><a href="#" onclick="$('#calendar').fullCalendar('next')"><span class="glyphicon glyphicon-forward"></span></a></li>
+      <li><a href="#" onclick="$('#calendar').fullCalendar('prev')"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+      <li><a href="#" onclick="$('#calendar').fullCalendar('today')"><span class="glyphicon glyphicon-bookmark"></span></a></li>
+      <li><a href="#" onclick="$('#calendar').fullCalendar('next')"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
     </ul>
     </nav>
     <!--<div class="container">-->

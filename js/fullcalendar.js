@@ -19,9 +19,10 @@ function calendar_init() {
         weekNumbers: true,
         weekNumberTitle: "n°",
         minTime: "07:00:00",
-        slotMinutes: 30,
+        //slotDuration: '01:00:00',
+        slotDuration: '00:30:00',
         allDayText: "",
-        aspectRatio: 0.5,
+        //aspectRatio: 2,
         timezone: "local",
         lazyFetching: false,
 

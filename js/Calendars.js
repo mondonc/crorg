@@ -33,7 +33,6 @@ function Calendars() {
 
     this.load = function (callback){
         getCalendarData(CALDAV_URL, $.proxy(function (r) {
-            console.log("callback");
             calendarList = [];
             $(r.responseXML).find('response').each(function(index, element){
                 if ($(element).find("calendar").length >= 1){
@@ -44,8 +43,8 @@ function Calendars() {
             for (href_idx in this.calendarList) {
                 this.calendars[href_idx] = new Calendar(this.calendarList[href_idx], COLORS[href_idx]);
             }
-            this.loadAllCalendars();
             callback();
+            this.loadAllCalendars();
         }, this));
     }
 

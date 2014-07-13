@@ -1,5 +1,6 @@
 
 var CALENDARS = new Calendars();
+var activeNav = "navdashboard";
 
 function refetchIfneeded(){
     //if (ICScpt != ICScpt_last && ICScpt == ICSloaded){
@@ -14,12 +15,32 @@ function refetchIfneeded(){
     //}
 }
 
+function changeView(id){
+        var contentId = id.replace(/^nav/, '');
+        var contentActiveNav = activeNav.replace(/^nav/, '');
+        document.getElementById(activeNav).classList.remove("active");
+        document.getElementById(contentActiveNav).style.display = 'none';
+        document.getElementById(id).classList.add("active");
+        document.getElementById(contentId).style.display = 'block';
+        activeNav = id;
+        if (contentId == "calendar") {
+            //if (document.getElementById(contentId).innerHTML) {
+                //calendar_init();
+                $('#calendar').fullCalendar('render');
+            //}
+        }
+}
+
+function refresh(){}
+function exit(){}
+
 
 $(document).ready(function() {
 
 
     //calendar_init();
     CALENDARS.load(calendar_init);
-    setInterval(function(){refetchIfneeded()}, 5000);
+    //CALENDARS.load();
+    //setInterval(function(){refetchIfneeded()}, 5000);
 
 });
