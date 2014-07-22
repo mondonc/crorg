@@ -59,3 +59,37 @@ function getCalendarData(url, callback ) {
             return false;
         }
     })); return this; }
+
+function ajaxHead ( origSettings ) {
+    $.ajaxSetup.headers = {};
+    var s = jQuery.extend(true, {}, jQuery.ajaxSettings,{type:'OPTIONS'},origSettings);
+        return jQuery.ajax ( { beforeSend: function (r){var h = s.headers;for (var i in h)r.setRequestHeader(i,h[i])},
+                   cache: s.cache,
+                   data: s.data,
+                   password: encodeURIComponent(s.password),
+                   username: encodeURIComponent(s.username),
+                   type: 'HEAD',
+                   url: s.url,
+                   success: s.success,
+                   complete: s.complete,
+                   }
+            );
+      }
+
+function ajaxPut( origSettings ) {
+        $.ajaxSetup.headers = {};
+        var s = jQuery.extend(true, {}, jQuery.ajaxSettings,{type:'PUT'},origSettings);
+        return jQuery.ajax ( { beforeSend: function (r){var h = s.headers;for (var i in h)r.setRequestHeader(i,h[i])},
+                            cache: s.cache,
+                        contentType: s.contentType,
+                        data: s.data,
+                        password: encodeURIComponent(PASSWORD),
+                        username: encodeURIComponent(USERNAME),
+                        type: 'PUT',
+                        url: s.url,
+                        success: s.success,
+                        complete: s.complete,
+        }
+                           );
+    }
+

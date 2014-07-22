@@ -101,8 +101,8 @@ function Calendar(href, colors) {
         for (e_idx in this.urls){
             console.log("Downloading " + this.urls[e_idx]);
             $.ajax({
-               type: "GET",
-               url: this.urls[e_idx],
+                type: "GET",
+                url: this.urls[e_idx],
             }).done((function(data){
                 var e = new Event(data);
                 this.events[e.uid] = e;
@@ -112,7 +112,7 @@ function Calendar(href, colors) {
                     addEventSource(this.getEventSource.bind(this)());
                 }
                 return data;
-           }).bind( this ));
+            }).bind( this ));
         }
     }
 
@@ -137,4 +137,90 @@ function Calendar(href, colors) {
             borderColor: this.borderColor,
         };
     }
+
+
+    this.putEvent = function( params , content ) {
+        $.fn.caldav('spinner',true);
+        var tmpOptions = $.extend(true,{},jQuery.fn.caldav.options,params);
+        if ( $.fn.caldav.locks[params.url] )
+            {
+                if ( tmpOptions.headers == undefined ) tmpOptions.headers = {};
+                tmpOptions.headers['If']= $.fn.caldav.locks[params.url].token;
+                if ( tmpOptions['Schedule-Reply'] != undefined ) tmpOptions.headers['Schedule-Reply'] = tmpOptions['Schedule-Reply'] ;
+                $.put ($.extend(true,tmpOptions,{contentType:'text/calendar',data:content,complete: function (r,s){
+                    $.fn.caldav('spinner',false);
+                    $.fn.caldav('unlock',params.url);
+                    $.fn.caldav.options.eventPut(r,s);
+                }
+                }));
+            }
+            else
+                {
+                    $.head ($.extend(true,tmpOptions,{contentType:undefined,headers:{},data:null,complete: function (r,s){
+                        if ( r.status != 404 )
+                            tmpOptions.headers['If-Match']=r.getResponseHeader('ETag');
+                        $.put ($.extend(true,tmpOptions,{contentType:'text/calendar',data:content,complete: function (r,s){
+                            $.fn.caldav('spinner',false);
+                            $.fn.caldav.options.eventPut(r,s);}
+                        }))
+                    }}));
+                }
+                return this;
+    }
+
+    this.putNewEvent = function( url , event ) {
+        var content = event.getICS();
+            ajaxPut({url:url + "/" + e.uid + ".ics",contentType: 'text/calendar',data:content,complete: function (r,s){
+                console.log("Putté " + r + " " + s)
+            }});
+    }
+
+    this.delEvent = function( params ) {
+        $.fn.caldav('spinner',true);
+        var tmpOptions = $.extend(true,{},jQuery.fn.caldav.options,params);
+        if ( $.fn.caldav.locks[params.url] )
+            {
+                if ( tmpOptions.headers == undefined ) tmpOptions.headers = {};
+                tmpOptions.headers['If']= $.fn.caldav.locks[params.url].token;
+                var headers = {};
+                if ( tmpOptions['Schedule-Reply'] != undefined ) tmpOptions.headers['Schedule-Reply'] = tmpOptions['Schedule-Reply'] ;
+                $.del ($.extend(true,tmpOptions,{data:null,complete: function (r,s){
+                    $.fn.caldav('spinner',false);
+                    delete $.fn.caldav.locks[params.url];
+                    $.fn.caldav.options.eventDel(params.url);}
+                }));
+            }
+            else
+                {
+                    delete tmpOptions.headers;
+                    $.head ($.extend(true,tmpOptions,{contentType:undefined,headers:{},data:null,complete: function (r,s){
+                        if ( r.status != 200 && r.status != 207 )
+                            { r.abort();
+                                $.fn.caldav('spinner',false);
+                                return false; }
+                                var headers = {};
+                                if ( tmpOptions['Schedule-Reply'] != undefined ) tmpOptions.headers['Schedule-Reply'] = tmpOptions['Schedule-Reply'] ;
+                                tmpOptions.headers={'If-Match':r.getResponseHeader('ETag')};
+                                $.del ($.extend(true,tmpOptions,{data:null,complete: function (r,s){
+                                    $.fn.caldav('spinner',false);
+                                    $.fn.caldav.options.eventDel(params.url);}
+                                }))
+                    }}));
+                }
+                return this;
+    }
+
+    this.moveEvent = function( params ) {
+        $.fn.caldav('spinner',true);
+        if ( $.fn.caldav.locks[params.url] )
+            params.headers['If']= $.fn.caldav.locks[params.url].token;
+        $.move ($.extend(true,{},jQuery.fn.caldav.options,params,{complete: function (r,s){
+            $.fn.caldav('spinner',false);
+            if ( $.fn.caldav.locks[params.url] )
+                delete $.fn.caldav.locks[params.url];
+            $.fn.caldav.options.eventPut(r,s);}
+        }));
+        return this;
+    }
+
 }

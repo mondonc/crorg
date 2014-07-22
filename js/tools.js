@@ -52,7 +52,7 @@ function parseDate( key, str) {
 
 
     if (!key.endsWith("VALUE=DATE")) {
-    //console.log(key);
+        //console.log(key);
         // TODO allways value=date at the end ???
         var ofs = str.indexOf( 'T' ) + 1;
         var h = parseInt( str.substring(ofs,ofs+2), 10);
@@ -70,3 +70,24 @@ function addEventSource(es){
     console.log(es);
     $('#calendar').fullCalendar('addEventSource', es);
 }
+
+function guid()
+{
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    }).toUpperCase();
+}
+
+function formatDate(ds) {
+   function pad(n){return n<10 ? '0'+n : n}
+
+     var d = new Date(ds);
+     return d.getUTCFullYear() + ''
+      + pad(d.getUTCMonth()+1) + ''
+      + pad(d.getUTCDate())+'T'
+      + pad(d.getUTCHours()) + ''
+      + pad(d.getUTCMinutes()) + ''
+      + pad(d.getUTCSeconds())+'Z';
+}
+

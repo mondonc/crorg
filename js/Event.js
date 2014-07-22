@@ -1,3 +1,17 @@
+EVENT_TEMPLATE = "BEGIN:VCALENDAR\n\
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN\n\
+VERSION:2.0\n\
+BEGIN:VEVENT\n\
+UID:8c122d5a-ab1e-410d-a0cc-56166b440001\n\
+SUMMARY:New Event\n\
+DTSTART:20140721T150000\n\
+DTEND:20140721T160000\n\
+LOCATION:ici\n\
+DESCRIPTION:description\n\
+END:VEVENT\n\
+END:VCALENDAR\n\
+";
+
 // Event class
 function Event(datas) {
 
@@ -29,7 +43,7 @@ function Event(datas) {
     this.d = {};
 
     if (datas) {
-        this.ics = datas;
+        //this.ics = datas;
         this.uid = datas.match(/UID:(.*)/)[1];
         this.parseICS(this.d, datas.split("\n"), 0);
     }
@@ -89,17 +103,20 @@ function Event(datas) {
         return null;
     }
 
-    this.getICS = function() {
+    this.getICS = function(obj) {
+        if (typeof obj == "undefined") {
+            obj = this.d;
+        }
         var result = "";
-        for(var propertyName in this.d) {
+        for(var propertyName in obj) {
 
             if (propertyName) {
                 var attr_name = propertyName;
-                var attr_value = this.d[attr_name];
+                var attr_value = obj[attr_name];
 
                 if (typeof(attr_value) == "object"){
                     result += "BEGIN:" + attr_name + "\n";
-                    result += writeICS(attr_value);
+                    result += this.getICS(attr_value);
                     result += "END:" + attr_name + "\n";
                 } else {
                     result += attr_name + ":" + attr_value + "\n";

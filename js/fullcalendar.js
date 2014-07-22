@@ -63,9 +63,33 @@ function calendar_init() {
         dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','vendredi','Samedi'],
         dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
 
-        select: function(start, end, allDay) {
+        select: function(start, end, jsEvent, view) {
 
-            display_prompt({title: "Event title : ", title_input: "", button: "Save", call: event_add, start : start, end : end, allDay: allDay});
+            console.log("addEvent");
+            console.log(start);
+            console.log(end);
+            //display_prompt({title: "Event title : ", title_input: "", button: "Save", call: event_add, start : start, end : end, allDay: allDay});
+            e = new Event(EVENT_TEMPLATE);
+            var uid = guid();
+            e.uid = uid;
+            e.d["VCALENDAR"]["VEVENT"]["UID"] = uid;
+            e.d["VCALENDAR"]["VEVENT"]["SUMMARY"] = "Template of the death";
+            if (!start.hasTime()){
+                e.d["VCALENDAR"]["VEVENT"]["DTSTART;VALUE=DATE"] = start.format("YYYYMMDD");
+                delete e.d["VCALENDAR"]["VEVENT"]["DTSTART"]
+            } else {
+                e.d["VCALENDAR"]["VEVENT"]["DTSTART"] = formatDate(start);
+            }
+            if (!end.hasTime()){
+                e.d["VCALENDAR"]["VEVENT"]["DTEND;VALUE=DATE"] = end.format("YYYYMMDD");
+                delete e.d["VCALENDAR"]["VEVENT"]["DTEND"]
+            } else {
+                e.d["VCALENDAR"]["VEVENT"]["DTEND"] = formatDate(end);
+            }
+            //console.log(e);
+            console.log(e.getICS());
+            //console.log(e);
+            CALENDARS.calendars[0].putNewEvent(CALENDARS.calendars[0].href, e);
 
         },
 
@@ -92,6 +116,7 @@ function calendar_init() {
 
 function addEvents ( e ,c, start, end )
 {
+
     console.log("addEvent");
     console.log(e);
 }
