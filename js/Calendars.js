@@ -54,6 +54,14 @@ function Calendars() {
         }
 
     }
+
+    this.find = function(name){
+        for (href_idx in this.calendars) {
+            if (this.calendars[href_idx].name == name)
+                return this.calendars[href_idx];
+        }
+        return null;
+    }
 }
 
 // Calendar class
@@ -69,6 +77,14 @@ function Calendar(href, colors) {
     this.textColor = colors["textColor"];
     this.unconfirmedColor = colors["unconfirmedColor"];
     this.ready = false;
+
+    var parts = this.href.split("/");
+    if (parts[name.length - 1])
+        this.name = parts[parts.length - 1];
+    else
+        this.name = parts[parts.length - 2];
+
+
 
     this.load = function (){
         this.loadEventList((this.loadEvents).bind(this));
@@ -138,41 +154,12 @@ function Calendar(href, colors) {
         };
     }
 
-
-    this.putEvent = function( params , content ) {
-        $.fn.caldav('spinner',true);
-        var tmpOptions = $.extend(true,{},jQuery.fn.caldav.options,params);
-        if ( $.fn.caldav.locks[params.url] )
-            {
-                if ( tmpOptions.headers == undefined ) tmpOptions.headers = {};
-                tmpOptions.headers['If']= $.fn.caldav.locks[params.url].token;
-                if ( tmpOptions['Schedule-Reply'] != undefined ) tmpOptions.headers['Schedule-Reply'] = tmpOptions['Schedule-Reply'] ;
-                $.put ($.extend(true,tmpOptions,{contentType:'text/calendar',data:content,complete: function (r,s){
-                    $.fn.caldav('spinner',false);
-                    $.fn.caldav('unlock',params.url);
-                    $.fn.caldav.options.eventPut(r,s);
-                }
-                }));
-            }
-            else
-                {
-                    $.head ($.extend(true,tmpOptions,{contentType:undefined,headers:{},data:null,complete: function (r,s){
-                        if ( r.status != 404 )
-                            tmpOptions.headers['If-Match']=r.getResponseHeader('ETag');
-                        $.put ($.extend(true,tmpOptions,{contentType:'text/calendar',data:content,complete: function (r,s){
-                            $.fn.caldav('spinner',false);
-                            $.fn.caldav.options.eventPut(r,s);}
-                        }))
-                    }}));
-                }
-                return this;
-    }
-
-    this.putNewEvent = function( url , event ) {
+    this.putEvent = function(event) {
         var content = event.getICS();
-            ajaxPut({url:url + "/" + e.uid + ".ics",contentType: 'text/calendar',data:content,complete: function (r,s){
-                console.log("Putté " + r + " " + s)
-            }});
+            ajaxPut({url:this.href + "/" + event.uid + ".ics",contentType: 'text/calendar',data:content,complete: (function (r,s){
+                console.log("Put " + r + " " + s)
+                this.events[event.uid] = event;
+            }).bind(this)});
     }
 
     this.delEvent = function( params ) {

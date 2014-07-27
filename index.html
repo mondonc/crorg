@@ -14,6 +14,7 @@
     <link href='fullcalendar/fullcalendar.css' rel='stylesheet' />
     <link href='fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href='datetimepicker/jquery.datetimepicker.css' rel="stylesheet"/>
     <link href="css/crorg.css" rel="stylesheet" />
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -96,10 +97,121 @@
       <div id="caldavloading1"></div>
       <!--</div>--> <!-- /container -->
 
+    <!-- Modal -->
+    <div class="modal fade" id="eventForm" tabindex="-1" role="dialog" aria-labelledby="eventFormTitle" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="eventFormTitle">Add event</h4>
+          </div>
+
+          <div id="eventFormBody" class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label for="eventFormSummary">Summary</label>
+                <input type="text" class="form-control" id="eventFormSummary" placeholder="Summary">
+              </div>
+              <div class="form-group">
+                <label for="eventFormDescription">Description</label>
+                <input type="text" class="form-control" id="eventFormDescription" placeholder="Description">
+              </div>
+              <div class="form-group">
+                <label for="eventFormLocation">Location</label>
+                <input type="text" class="form-control" id="eventFormLocation" placeholder="Location">
+              </div>
+              <div class="form-group form-inline">
+                <label for="eventFormStart">Start</label>
+                <input type="text" class="form-control" id="eventFormStart"/>
+                <select id="eventFormStartHour" class="form-control">
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                  <option>13</option>
+                  <option>14</option>
+                  <option>15</option>
+                  <option>16</option>
+                  <option>17</option>
+                  <option>18</option>
+                  <option>19</option>
+                  <option>20</option>
+                  <option>21</option>
+                  <option>22</option>
+                  <option>23</option>
+                </select>
+                <select id="eventFormStartMinute" class="form-control">
+                  <option>00</option>
+                  <option>10</option>
+                  <option>15</option>
+                  <option>20</option>
+                  <option>30</option>
+                  <option>40</option>
+                  <option>45</option>
+                  <option>50</option>
+                </select>
+
+              </div>
+              <div class="form-group form-inline">
+                <label for="eventFormEnd">End</label>
+                <input type="text" class="form-control" id="eventFormEnd" placeholder="End"/>
+                <select id="eventFormEndHour" class="form-control">
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                  <option>13</option>
+                  <option>14</option>
+                  <option>15</option>
+                  <option>16</option>
+                  <option>17</option>
+                  <option>18</option>
+                  <option>19</option>
+                  <option>20</option>
+                  <option>21</option>
+                  <option>22</option>
+                  <option>23</option>
+                </select>
+                <select id="eventFormEndMinute" class="form-control">
+                  <option>00</option>
+                  <option>10</option>
+                  <option>15</option>
+                  <option>20</option>
+                  <option>30</option>
+                  <option>40</option>
+                  <option>45</option>
+                  <option>50</option>
+                </select>
+
+              </div>
+              <label>
+                <input id="EventFormAllDay" type="checkbox"> All Day
+              </label>
+              <label>
+                <input type="checkbox"> Confirmed
+              </label>
+                <select id="eventFormCalendar" class="form-control">
+                </select>
+            </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button id="eventFormButton" type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src='fullcalendar/lib/moment.min.js'></script>
     <script src='fullcalendar/lib/jquery.min.js'></script>
     <script src='fullcalendar/lib/jquery-ui.custom.min.js'></script>
     <script src='fullcalendar/fullcalendar.min.js'></script>
+    <script src='datetimepicker/jquery.datetimepicker.js'></script>
+    <script src='js/EventForm.js'></script>
     <script src='js/tools.js'></script>
     <script src='js/config.js'></script>
     <script src='js/fullcalendar.js'></script>
@@ -107,5 +219,9 @@
     <script src='js/Event.js'></script>
     <script src='js/caldav.js'></script>
     <script src='js/crorg.js'></script>
+    <script src='bootstrap/js/bootstrap.min.js'></script>
+    <script>
+      //$('#eventForm').modal("show");
+    </script>
   </body>
 </html>
