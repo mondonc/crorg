@@ -85,7 +85,7 @@ function EventForm(){
             }));
         });
 
-        this.button.click(this.getValues);
+        //this.button.click(this.getValues);
         $('#eventForm').modal("show");
     }
 
