@@ -1,5 +1,5 @@
 function calendar_init() {
-    calendar = $('#calendar').fullCalendar({
+    var FCCALENDAR = $('#calendar').fullCalendar({
 
         header: {
             left: '',

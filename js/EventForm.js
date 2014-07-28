@@ -1,6 +1,9 @@
 // Class
 function EventForm(){
 
+    this.dateFormat = "DD/MM/YYYY"
+
+    this.title = $("#eventFormTitle");
     this.summary = $("#eventFormSummary");
     this.description = $("#eventFormDescription");
     this.location = $("#eventFormLocation");
@@ -13,6 +16,7 @@ function EventForm(){
     this.endMinute = $("#eventFormEndMinute");
     this.calendar = $("#eventFormCalendar");
     this.allday = $("#eventFormAllDay");
+    this.uid = "";
 
     this.start.datetimepicker({
         format:'d/m/Y',
@@ -41,15 +45,16 @@ function EventForm(){
 
     this.show = function(event){
 
-        this.start.val(event.start.format("DD/MM/YYYY"));
+        this.start.val(event.start.format(this.dateFormat));
         this.startHour.val(event.start.format("HH"));
         this.startMinute.val(event.start.format("mm"));
-        this.end.val(event.end.format("DD/MM/YYYY"));
+        this.end.val(event.end.format(this.dateFormat));
         this.endHour.val(event.end.format("HH"));
         this.endMinute.val(event.end.format("mm"));
 
         // If allday event
         if (!event.start.hasTime()){
+            console.log("ALLDAY");
             this.allday.prop("checked", true);
         } else {
             this.allday.prop("checked", false);
@@ -60,7 +65,9 @@ function EventForm(){
 
             this.title = "Add new event";
             this.uid = "";
-            this.end.value = event.end;
+            this.summary.val("");
+            this.description.val("");
+            this.location.val("");
 
         // Existing Event
         } else {
@@ -83,47 +90,40 @@ function EventForm(){
     }
 
     this.getValues = function(){
-        console.log(EVENTFORM.summary);
+        var cal = CALENDARS.find(EVENTFORM.calendar.val());
         if (EVENTFORM.uid){
 
         // New Event
         } else {
-            var e = new Event(EVENT_TEMPLATE);
+            var e = new Event(EVENT_TEMPLATE, cal);
             e.uid = guid();
             e.d["VCALENDAR"]["VEVENT"]["UID"] = e.uid;
             e.d["VCALENDAR"]["VEVENT"]["SUMMARY"] = EVENTFORM.summary.val();
             e.d["VCALENDAR"]["VEVENT"]["DESCRIPTION"] = EVENTFORM.description.val();
             e.d["VCALENDAR"]["VEVENT"]["LOCATION"] = EVENTFORM.location.val();
 
-            var startparts = EVENTFORM.start.val().split("/");
-            var endparts = EVENTFORM.end.val().split("/");
-            var startdate = new Date(startparts[2], startparts[1] - 1, startparts[0]);
-            var enddate = new Date(endparts[2], endparts[1] - 1, endparts[0]);
+            var startdate = new moment(EVENTFORM.start.val(), EVENTFORM.dateFormat);
+            var enddate = new moment(EVENTFORM.end.val(), EVENTFORM.dateFormat);
             if (EVENTFORM.allday.prop("checked")){
+                console.log(startdate);
                 e.d["VCALENDAR"]["VEVENT"]["DTSTART;VALUE=DATE"] = startdate.format("YYYYMMDD");
                 delete e.d["VCALENDAR"]["VEVENT"]["DTSTART"];
                 e.d["VCALENDAR"]["VEVENT"]["DTEND;VALUE=DATE"] = enddate.format("YYYYMMDD");
-                delete e.d["VCALENDAR"]["VEVENT"]["DTEND"]
+                delete e.d["VCALENDAR"]["VEVENT"]["DTEND"];
             } else {
-                startdate.setHours(EVENTFORM.startHour.val());
-                startdate.setMinutes(EVENTFORM.startMinute.val());
+                startdate.hour(EVENTFORM.startHour.val());
+                startdate.minute(EVENTFORM.startMinute.val());
                 e.d["VCALENDAR"]["VEVENT"]["DTSTART"] = formatDate(startdate);
-                enddate.setHours(EVENTFORM.endHour.val());
-                enddate.setMinutes(EVENTFORM.endMinute.val());
+                enddate.hour(EVENTFORM.endHour.val());
+                enddate.minute(EVENTFORM.endMinute.val());
                 e.d["VCALENDAR"]["VEVENT"]["DTEND"] = formatDate(enddate);
             }
-            console.log(startdate);
-            console.log(enddate);
             console.log(e.getICS());
         }
 
-        CALENDARS.find(EVENTFORM.calendar.val()).putEvent(e);
+        cal.putEvent(e);
         $('#eventForm').modal("hide");
-        //CALENDARS.calendars[0].putEvent(CALENDARS.calendars[0].href, e);
-
-
-        console.log("Fin");
-
+        $("#calendar").fullCalendar( 'renderEvent', e.getFC())
     }
 
 }

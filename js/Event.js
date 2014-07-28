@@ -13,7 +13,9 @@ END:VCALENDAR\n\
 ";
 
 // Event class
-function Event(datas) {
+function Event(datas, calendar) {
+
+    this.calendar = calendar;
 
     this.parseICS = function(parent_object, data, idx) {
 
@@ -95,9 +97,9 @@ function Event(datas) {
                     FCevent["id"] = e.VCALENDAR.VEVENT[prop];
                 }
             }
-            //FCevent["textColor"] = "red";
-            //FCevent["backgroundColor"] = "green";
-            //FCevent["borderColor"] = "yellow";
+            FCevent["textColor"] = this.calendar.textColor;
+            FCevent["backgroundColor"] = this.calendar.backgroundColor;
+            FCevent["borderColor"] = this.calendar.borderColor;
             return FCevent;
         }
         return null;

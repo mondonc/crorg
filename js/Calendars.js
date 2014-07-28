@@ -84,8 +84,6 @@ function Calendar(href, colors) {
     else
         this.name = parts[parts.length - 2];
 
-
-
     this.load = function (){
         this.loadEventList((this.loadEvents).bind(this));
     }
@@ -120,7 +118,7 @@ function Calendar(href, colors) {
                 type: "GET",
                 url: this.urls[e_idx],
             }).done((function(data){
-                var e = new Event(data);
+                var e = new Event(data, this);
                 this.events[e.uid] = e;
                 this.eventsLoaded++;
                 if (this.eventsLoaded == this.eventsCpt) {
@@ -134,7 +132,6 @@ function Calendar(href, colors) {
 
     this.getFCEvents = function(start, end, timezone, callback) {
         if (this.ready && this.FCevents.length == 0) {
-            console.log("Translating events ");
             for (var uid in this.events) {
                 FCe = this.events[uid].getFC();
                 if (FCe)
@@ -157,8 +154,9 @@ function Calendar(href, colors) {
     this.putEvent = function(event) {
         var content = event.getICS();
             ajaxPut({url:this.href + "/" + event.uid + ".ics",contentType: 'text/calendar',data:content,complete: (function (r,s){
-                console.log("Put " + r + " " + s)
+                console.log("Put " + s)
                 this.events[event.uid] = event;
+                this.FCevents.push(event.getFC());
             }).bind(this)});
     }
 
