@@ -130,6 +130,10 @@ function Calendar(href, colors) {
         }
     }
 
+    this.getEvent = function(uid){
+        return this.events[uid];
+    }
+
     this.getFCEvents = function(start, end, timezone, callback) {
         if (this.ready && this.FCevents.length == 0) {
             for (var uid in this.events) {
@@ -161,38 +165,7 @@ function Calendar(href, colors) {
     }
 
     this.delEvent = function( params ) {
-        $.fn.caldav('spinner',true);
-        var tmpOptions = $.extend(true,{},jQuery.fn.caldav.options,params);
-        if ( $.fn.caldav.locks[params.url] )
-            {
-                if ( tmpOptions.headers == undefined ) tmpOptions.headers = {};
-                tmpOptions.headers['If']= $.fn.caldav.locks[params.url].token;
-                var headers = {};
-                if ( tmpOptions['Schedule-Reply'] != undefined ) tmpOptions.headers['Schedule-Reply'] = tmpOptions['Schedule-Reply'] ;
-                $.del ($.extend(true,tmpOptions,{data:null,complete: function (r,s){
-                    $.fn.caldav('spinner',false);
-                    delete $.fn.caldav.locks[params.url];
-                    $.fn.caldav.options.eventDel(params.url);}
-                }));
-            }
-            else
-                {
-                    delete tmpOptions.headers;
-                    $.head ($.extend(true,tmpOptions,{contentType:undefined,headers:{},data:null,complete: function (r,s){
-                        if ( r.status != 200 && r.status != 207 )
-                            { r.abort();
-                                $.fn.caldav('spinner',false);
-                                return false; }
-                                var headers = {};
-                                if ( tmpOptions['Schedule-Reply'] != undefined ) tmpOptions.headers['Schedule-Reply'] = tmpOptions['Schedule-Reply'] ;
-                                tmpOptions.headers={'If-Match':r.getResponseHeader('ETag')};
-                                $.del ($.extend(true,tmpOptions,{data:null,complete: function (r,s){
-                                    $.fn.caldav('spinner',false);
-                                    $.fn.caldav.options.eventDel(params.url);}
-                                }))
-                    }}));
-                }
-                return this;
+                return null;
     }
 
     this.moveEvent = function( params ) {

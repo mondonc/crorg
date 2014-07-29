@@ -72,8 +72,10 @@ function calendar_init() {
         },
 
         eventClick: function(calEvent, jsEvent, view) {
-            display_prompt({title: "Event title : ", title_input: calEvent.title, button: "Save", call: event_update, start : calEvent.start, end : calEvent.end, allDay : calEvent.allDay, e : calEvent});
+            EVENTFORM.show(calEvent);
+            //display_prompt({title: "Event title : ", title_input: calEvent.title, button: "Save", call: event_update, start : calEvent.start, end : calEvent.end, allDay : calEvent.allDay, e : calEvent});
             //var title = window.prompt("Evenement :",calEvent.title);
+            return false;
         },
 
         loading: function(bool) {
@@ -88,29 +90,10 @@ function calendar_init() {
     });
 }
 
-function addEvents ( e ,c, start, end )
-{
-
-    console.log("addEvent");
-    console.log(e);
-}
-
 function addToDos ( e ,c )
 {
     console.log("addToDos");
     console.log(e);
-}
-
-function eventPut(r,s)
-{
-    if ( s != 'success' )
-        {
-            alert ('failed to save event to server');
-            console.log(r);
-        } else {
-            console.log("save success");
-            console.log(r);
-        }
 }
 
 function removeEvent ( href )

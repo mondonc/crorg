@@ -93,6 +93,12 @@ function Event(datas, calendar) {
                 } else if (prop.startsWith("SUMMARY")) {
                     FCevent["title"] = e.VCALENDAR.VEVENT[prop];
 
+                } else if (prop.startsWith("DESCRIPTION")) {
+                    FCevent["description"] = e.VCALENDAR.VEVENT[prop];
+
+                } else if (prop.startsWith("LOCATION")) {
+                    FCevent["location"] = e.VCALENDAR.VEVENT[prop];
+
                 } else if (prop.startsWith("UID")) {
                     FCevent["id"] = e.VCALENDAR.VEVENT[prop];
                 }
@@ -100,6 +106,7 @@ function Event(datas, calendar) {
             FCevent["textColor"] = this.calendar.textColor;
             FCevent["backgroundColor"] = this.calendar.backgroundColor;
             FCevent["borderColor"] = this.calendar.borderColor;
+            FCevent["calendar"] = this.calendar;
             return FCevent;
         }
         return null;
