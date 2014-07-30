@@ -3,7 +3,7 @@ function EventForm(){
 
     this.dateFormat = "DD/MM/YYYY"
 
-    this.title = $("#eventFormTitle");
+    this.title = document.getElementById("eventFormTitle");
     this.summary = $("#eventFormSummary");
     this.description = $("#eventFormDescription");
     this.location = $("#eventFormLocation");
@@ -28,21 +28,6 @@ function EventForm(){
         format:'d/m/Y',
         timepicker:false,
     });
-
-//    var now = moment( ).subtract( "seconds", 1 );
-//    this.start.filthypillow( {
-//      minDateTime: function( ) {
-    //        return now;
-    //      },
-    //      saveOnDateSelect: true,
-    //    } );
-    //    this.start.on( "focus", (function( ) {
-    //      this.start.filthypillow( "show" );
-    //    }).bind(this) );
-    //    this.start.on( "eventFormStart:save", (function( e, dateObj ) {
-    //      this.start.val( dateObj.format( "MMM DD YYYY hh:mm A" ) );
-    //      this.start.filthypillow( "hide" );
-    //    }).bind(this) );
 
     this.show = function(event){
 
@@ -73,27 +58,30 @@ function EventForm(){
         // New event
         if (!event.hasOwnProperty("id")){
 
-            this.title.val("Add new event");
+            this.title.innerHTML = "Add new event";
             this.uid = "";
             this.summary.val("");
             this.description.val("");
             this.location.val("");
+            DELFORM.hideButton();
 
         // Existing Event
         } else {
 
             console.log("existing");
-            this.title.val("Update event");
+            this.title.innerHTML = "Update event";
             this.uid = event.id;
             this.summary.val(event.title);
             this.description.val(event.description);
             this.location.val(event.location);
             this.parentCalendar = event.calendar;
             this.calendars.val(event.calendar.name);
+            DELFORM.init(event);
         }
 
         //this.button.click(this.getValues);
         $('#eventForm').modal("show");
+
     }
 
     this.getValues = function(){

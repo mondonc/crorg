@@ -93,3 +93,20 @@ function ajaxPut( origSettings ) {
                            );
     }
 
+function ajaxDel( origSettings ) {
+        $.ajaxSetup.headers = {};
+        var s = jQuery.extend(true, {}, jQuery.ajaxSettings,{type:'DELETE'},origSettings);
+        return jQuery.ajax ( { beforeSend: function (r){var h = s.headers;for (var i in h)r.setRequestHeader(i,h[i])},
+                            cache: s.cache,
+                        contentType: s.contentType,
+                        data: s.data,
+                        password: encodeURIComponent(PASSWORD),
+                        username: encodeURIComponent(USERNAME),
+                        type: 'DELETE',
+                        url: s.url,
+                        success: s.success,
+                        complete: s.complete,
+        }
+                           );
+    }
+

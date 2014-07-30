@@ -1,6 +1,7 @@
 
 var CALENDARS = new Calendars();
 var EVENTFORM = new EventForm();
+var DELFORM = new DelForm();
 var activeNav = "navdashboard";
 
 function refetchIfneeded(){

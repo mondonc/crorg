@@ -164,21 +164,14 @@ function Calendar(href, colors) {
             }).bind(this)});
     }
 
-    this.delEvent = function( params ) {
+    this.delEvent = function(event) {
+        var content = event.getICS();
+            ajaxDel({url:this.href + "/" + event.uid + ".ics",contentType: 'text/calendar',data:content,complete: (function (r,s){
+                console.log("Delete " + s)
+                delete this.events[event.uid];
+                delete this.FCevents;
+            }).bind(this)});
+
                 return null;
     }
-
-    this.moveEvent = function( params ) {
-        $.fn.caldav('spinner',true);
-        if ( $.fn.caldav.locks[params.url] )
-            params.headers['If']= $.fn.caldav.locks[params.url].token;
-        $.move ($.extend(true,{},jQuery.fn.caldav.options,params,{complete: function (r,s){
-            $.fn.caldav('spinner',false);
-            if ( $.fn.caldav.locks[params.url] )
-                delete $.fn.caldav.locks[params.url];
-            $.fn.caldav.options.eventPut(r,s);}
-        }));
-        return this;
-    }
-
 }
