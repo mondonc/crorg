@@ -29,7 +29,7 @@ function EventForm(){
         timepicker:false,
     });
 
-    this.show = function(event){
+    this.show = function(event, showModal){
 
         this.start.val(event.start.format(this.dateFormat));
         this.startHour.val(event.start.format("HH"));
@@ -48,6 +48,8 @@ function EventForm(){
 
         this.calendars.find('option').remove();
         $.each(CALENDARS.calendars, function (i, cal) {
+            console.log(i);
+            console.log(cal);
            EVENTFORM.calendars.append($('<option>', {
                 value: cal.name,
                 text : cal.name
@@ -80,7 +82,9 @@ function EventForm(){
         }
 
         //this.button.click(this.getValues);
-        $('#eventForm').modal("show");
+        if (showModal) {
+            $('#eventForm').modal("show");
+        }
 
     }
 

@@ -3,6 +3,11 @@ var CALENDARS = new Calendars();
 var EVENTFORM = new EventForm();
 var DELFORM = new DelForm();
 var activeNav = "navdashboard";
+var first_day = moment().day(1);
+first_day.millisecond(0);
+first_day.second(0);
+first_day.minute(0);
+first_day.hour(0);
 
 function refetchIfneeded(){
     //if (ICScpt != ICScpt_last && ICScpt == ICSloaded){
@@ -41,8 +46,9 @@ $(document).ready(function() {
 
 
     //calendar_init();
-    CALENDARS.load(calendar_init);
-    //CALENDARS.load();
+    calendar_init();
+    //CALENDARS.load(calendar_init);
+    CALENDARS.load();
     //setInterval(function(){refetchIfneeded()}, 5000);
 
 });

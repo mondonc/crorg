@@ -31,8 +31,8 @@ function Calendars() {
     this.calendars = [];
     this.calendarList = [];
 
-    this.load = function (callback){
-        getCalendarData(CALDAV_URL, $.proxy(function (r) {
+    this.load = function (){
+        getCalendarData(CALDAV_URL, $.proxy(function (datasObj, status, r) {
             calendarList = [];
             $(r.responseXML).find('response').each(function(index, element){
                 if ($(element).find("calendar").length >= 1){
@@ -42,17 +42,16 @@ function Calendars() {
             this.calendarList = calendarList;
             for (href_idx in this.calendarList) {
                 this.calendars[href_idx] = new Calendar(this.calendarList[href_idx], COLORS[href_idx]);
+                addEventSource(this.calendars[href_idx].getEventSource());
             }
-            callback();
-            this.loadAllCalendars();
+            //CALENDARS.loadAllCalendars();
         }, this));
     }
 
     this.loadAllCalendars = function () {
-        for (href_idx in this.calendars) {
-            this.calendars[href_idx].load();
+        for (href_idx in CALENDARS.calendars) {
+            CALENDARS.calendars[href_idx].load();
         }
-
     }
 
     this.find = function(name){
@@ -67,16 +66,16 @@ function Calendars() {
 // Calendar class
 function Calendar(href, colors) {
     this.href = href;
-    this.urls = [];
-    this.events = {};
-    this.FCevents = [];
-    this.eventsCpt = 0;
-    this.eventsLoaded = 0;
     this.borderColor = colors["borderColor"];
     this.backgroundColor = colors["backgroundColor"];
     this.textColor = colors["textColor"];
     this.unconfirmedColor = colors["unconfirmedColor"];
+    this.urls = [];
+    this.events = {};
     this.ready = false;
+    this.eventsCpt = {};
+    this.eventsLoaded = {};
+    this.currentDay = "";
 
     var parts = this.href.split("/");
     if (parts[name.length - 1])
@@ -85,70 +84,87 @@ function Calendar(href, colors) {
         this.name = parts[parts.length - 2];
 
     this.load = function (){
-        this.loadEventList((this.loadEvents).bind(this));
+        this.loadEventList(first_day, false);
     }
 
-    this.loadEventList = function (callback){
-        console.log("Loading " + this.href);
+    this.loadEventList = function (start, refetchNeeded){
+        console.log("Loading " + this.href + " for " + start.format("YYYYMMDD"));
+        var stop = moment(start).add('days', 7);
+        var key = formatDate(start);
 
-        this.eventsCpt = 0;
-        getCalendarData(this.href, $.proxy(function (r) {
-            this.name = $(r.responseXML).find('displayname').text();
-            urls = [];
-            eCpt = 0;
+        this.eventsCpt[key] = 0;
+        getEventsList(this.href, start, stop, $.proxy(function (obj, status, r) {
+            var urls = [];
             $(r.responseXML).find('href').each(function(index, element){
                 el = $(element).text();
                 if (el.endsWith(".ics")) {
                     urls.push(el);
-                    eCpt++;
                 }
-
             });
-            this.urls = urls;
-            this.eventsCpt += eCpt;
-            callback();
+            this.urls[key] = urls;
+            this.eventsCpt[key] += urls.length;
+            this.events[key] = {};
+            this.loadEvents(this, start, refetchNeeded);
         }, this));
     }
 
-    this.loadEvents = function (){
-        this.eventsLoaded = 0;
-        for (e_idx in this.urls){
-            console.log("Downloading " + this.urls[e_idx]);
+    this.loadEvents = function (self, start, refetchNeeded){
+        var key = formatDate(start);
+        self.eventsLoaded[key] = 0;
+        for (e_idx in self.urls[key]){
+            console.log("Downloading " + self.urls[key][e_idx]);
             $.ajax({
                 type: "GET",
-                url: this.urls[e_idx],
-            }).done((function(data){
-                var e = new Event(data, this);
-                this.events[e.uid] = e;
-                this.eventsLoaded++;
-                if (this.eventsLoaded == this.eventsCpt) {
-                    this.ready = true;
-                    addEventSource(this.getEventSource.bind(this)());
+                url: self.urls[key][e_idx],
+            }).done(function(data){
+                var e = new Event(data, self);
+                self.events[key][e.uid] = e;
+                self.eventsLoaded[key]++;
+                if (self.eventsLoaded[key] == self.eventsCpt[key]) {
+                    self.ready = true;
+                    if (refetchNeeded) {
+                        refetchEvents();
+                    }
                 }
                 return data;
-            }).bind( this ));
+            });
         }
     }
 
     this.getEvent = function(uid){
-        return this.events[uid];
+        for (key in this.events){
+            if (this.events[key].hasOwnProperty(uid)){
+                return this.events[key][uid];
+            }
+        }
+        console.log("Unable to find " + uid);
+        return null;
+    }
+
+    this._getFCEvents = function(start, events, callback) {
+        var key = formatDate(start);
+
+        if (events.hasOwnProperty(key)) {
+            var fclist = [];
+            for (var uid in events[key]) {
+                FCe = events[key][uid].getFC();
+                if (FCe)
+                    fclist.push(FCe);
+            }
+            callback(fclist);
+        } else {
+            this.loadEventList(start, true)
+        }
     }
 
     this.getFCEvents = function(start, end, timezone, callback) {
-        if (this.ready && this.FCevents.length == 0) {
-            for (var uid in this.events) {
-                FCe = this.events[uid].getFC();
-                if (FCe)
-                    this.FCevents.push(FCe);
-            }
-        }
-        callback(this.FCevents);
+        this.currentDay = formatDate(start);
+        this._getFCEvents(start, this.events, callback);
     }
 
     this.getEventSource = function(){
-        //return this.getFCEvents;
         return {
-            events: (this.getFCEvents).bind(this),
+            events: $.proxy(this.getFCEvents, this),
             textColor: this.textColor,
             backgroundColor: this.backgroundColor,
             borderColor: this.borderColor,
@@ -157,20 +173,20 @@ function Calendar(href, colors) {
 
     this.putEvent = function(event) {
         var content = event.getICS();
-            ajaxPut({url:this.href + "/" + event.uid + ".ics",contentType: 'text/calendar',data:content,complete: (function (r,s){
-                console.log("Put " + s)
-                this.events[event.uid] = event;
-                this.FCevents.push(event.getFC());
-            }).bind(this)});
+        console.log(this.href);
+        console.log(event.uid);
+        ajaxPut(this.href + "/" + event.uid + ".ics", content, (function (obj, s, r){
+                console.log("Put success " + event.uid);
+                this.events[this.currentDay][event.uid] = event;
+            }).bind(this));
     }
 
     this.delEvent = function(event) {
         var content = event.getICS();
-            ajaxDel({url:this.href + "/" + event.uid + ".ics",contentType: 'text/calendar',data:content,complete: (function (r,s){
-                console.log("Delete " + s)
-                delete this.events[event.uid];
-                delete this.FCevents;
-            }).bind(this)});
+            ajaxDel(this.href + "/" + event.uid + ".ics", content, (function (obj, s, r){
+                console.log("Delete success " + event.uid);
+                delete this.events[this.currentDay][event.uid];
+            }).bind(this));
 
                 return null;
     }

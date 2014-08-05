@@ -64,15 +64,16 @@ function calendar_init() {
         dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
 
         select: function(start, end, jsEvent, view) {
-            EVENTFORM.show({start: start, end: end, jsEvent: jsEvent});
+            EVENTFORM.show({start: start, end: end, jsEvent: jsEvent}, true);
         },
 
-        eventDrop: function(event, delta) {
-            event_send(event);
+        eventDrop: function(calEvent, delta) {
+            EVENTFORM.show(calEvent, false);
+            EVENTFORM.getValues();
         },
 
         eventClick: function(calEvent, jsEvent, view) {
-            EVENTFORM.show(calEvent);
+            EVENTFORM.show(calEvent, true);
             //display_prompt({title: "Event title : ", title_input: calEvent.title, button: "Save", call: event_update, start : calEvent.start, end : calEvent.end, allDay : calEvent.allDay, e : calEvent});
             //var title = window.prompt("Evenement :",calEvent.title);
             return false;

@@ -40,7 +40,7 @@ var validDate = /^([0-9]{4})([0-9]{2})([0-9]{2})([Tt]([0-2][0-9])([0-6][0-9])([0
 var validDuration = /([-+])?P([0-9]+W)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?/;
 var localOffset = new Date().getTimezoneOffset();
 //var tzidPattern = /(?<=TZID=)[^:]+/;
-var tzidPattern = /TZID="([^:]+)"/;
+var tzidPattern = /TZID=/;
 
 function parseDate( key, str) {
     var year = parseInt( str.substring(0,4), 10);
@@ -67,8 +67,11 @@ function parseDate( key, str) {
 
 function addEventSource(es){
     console.log("Adding eventSource");
-    console.log(es);
     $('#calendar').fullCalendar('addEventSource', es);
+}
+
+function refetchEvents(){
+    $('#calendar').fullCalendar('refetchEvents');
 }
 
 function guid()

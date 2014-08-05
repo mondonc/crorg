@@ -55,8 +55,8 @@ function Event(datas, calendar) {
         var e = this.d;
 
         if (e.VCALENDAR.hasOwnProperty("VTIMEZONE")) {
-            var hours_offset = parseInt(e.VCALENDAR.VTIMEZONE.TZOFFSETTO.substring(0, 3));
-            var minutes_offset = parseInt(e.VCALENDAR.VTIMEZONE.TZOFFSETTO.substring(3, 5));
+            var hours_offset = parseInt(e.VCALENDAR.VTIMEZONE.TZOFFSETFROM.substring(0, 3));
+            var minutes_offset = parseInt(e.VCALENDAR.VTIMEZONE.TZOFFSETFROM.substring(3, 5));
             if (hours_offset >= 0) {
                 minutes_offset = -minutes_offset;
             }
