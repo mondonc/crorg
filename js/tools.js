@@ -7,14 +7,14 @@ function pad(number) {
     return r;
 }
 
-Date.prototype.toISOTZString = function() {
-    return this.getUTCFullYear()
-    + '-' + pad( this.getUTCMonth() + 1 )
-    + '-' + pad( this.getUTCDate() )
-    + 'T' + pad( this.getUTCHours() )
-    + ':' + pad( this.getUTCMinutes() )
-    + ':' + pad( this.getUTCSeconds() )
-    + '.' + String( (this.getUTCMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
+function toISOTZString(date) {
+    return date.getUTCFullYear()
+    + '-' + pad( date.getUTCMonth() + 1 )
+    + '-' + pad( date.getUTCDate() )
+    + 'T' + pad( date.getUTCHours() )
+    + ':' + pad( date.getUTCMinutes() )
+    + ':' + pad( date.getUTCSeconds() )
+    + '.' + String( (date.getUTCMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
     + 'Z';
 };
 
@@ -40,7 +40,8 @@ var validDate = /^([0-9]{4})([0-9]{2})([0-9]{2})([Tt]([0-2][0-9])([0-6][0-9])([0
 var validDuration = /([-+])?P([0-9]+W)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?/;
 var localOffset = new Date().getTimezoneOffset();
 //var tzidPattern = /(?<=TZID=)[^:]+/;
-var tzidPattern = /TZID=/;
+//var tzidPattern = /TZID=/;
+var tzidPattern = /TZID=([^:]+)/;
 
 function parseDate( key, str) {
     var year = parseInt( str.substring(0,4), 10);
@@ -52,8 +53,6 @@ function parseDate( key, str) {
 
 
     if (!key.endsWith("VALUE=DATE")) {
-        //console.log(key);
-        // TODO allways value=date at the end ???
         var ofs = str.indexOf( 'T' ) + 1;
         var h = parseInt( str.substring(ofs,ofs+2), 10);
         var min = parseInt( str.substring(ofs+2,ofs+4), 10);
@@ -72,6 +71,11 @@ function addEventSource(es){
 
 function refetchEvents(){
     $('#calendar').fullCalendar('refetchEvents');
+}
+
+function refetchSource(calendar){
+    $("#calendar").fullCalendar( 'removeEventSource', calendar.getEventSource() );
+    $("#calendar").fullCalendar( 'addEventSource', calendar.getEventSource() );
 }
 
 function guid()

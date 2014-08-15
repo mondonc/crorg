@@ -124,6 +124,7 @@ function Calendar(href, colors) {
                     self.ready = true;
                     if (refetchNeeded) {
                         refetchEvents();
+                        //refetchSource(self);
                     }
                 }
                 return data;
@@ -173,8 +174,6 @@ function Calendar(href, colors) {
 
     this.putEvent = function(event) {
         var content = event.getICS();
-        console.log(this.href);
-        console.log(event.uid);
         ajaxPut(this.href + "/" + event.uid + ".ics", content, (function (obj, s, r){
                 console.log("Put success " + event.uid);
                 this.events[this.currentDay][event.uid] = event;

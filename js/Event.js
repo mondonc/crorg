@@ -15,7 +15,6 @@ END:VCALENDAR\n\
 // Event class
 function Event(datas, calendar) {
 
-    this.calendar = calendar;
 
     this.parseICS = function(parent_object, data, idx) {
 
@@ -32,20 +31,26 @@ function Event(datas, calendar) {
                     parent_object[attr_value.trim()] = e;
 
                 } else if  (attr_name == "END") {
-                    return idx + 1;
+                    return idx;
 
                 } else {
-                    parent_object[attr_name] = attr_value.trim();
+
+                    if (attr_name == "") {
+                        parent_object[attr_value] = null;
+                    } else {
+                        parent_object[attr_name] = attr_value.trim();
+                    }
                 }
             }
             idx += 1;
         }
+        //return idx;
     }
 
+    this.calendar = calendar;
     this.d = {};
 
     if (datas) {
-        //this.ics = datas;
         this.uid = datas.match(/UID:(.*)/)[1];
         this.parseICS(this.d, datas.split("\n"), 0);
     }
@@ -54,41 +59,33 @@ function Event(datas, calendar) {
 
         var e = this.d;
 
-        if (e.VCALENDAR.hasOwnProperty("VTIMEZONE")) {
-            var hours_offset = parseInt(e.VCALENDAR.VTIMEZONE.TZOFFSETFROM.substring(0, 3));
-            var minutes_offset = parseInt(e.VCALENDAR.VTIMEZONE.TZOFFSETFROM.substring(3, 5));
-            if (hours_offset >= 0) {
-                minutes_offset = -minutes_offset;
-            }
-        } else {
-            var hours_offset = 0;
-            var minutes_offset = 0;
-        }
-
         if (e.VCALENDAR.hasOwnProperty("VEVENT")) {
             var FCevent = {};
             for (prop in e.VCALENDAR.VEVENT) {
 
                 if (prop.startsWith("DTSTART")) {
-                    var startDate = parseDate(prop ,e.VCALENDAR.VEVENT[prop]);
                     var tz = tzidPattern.exec(prop);
                     if (tz){
-                        startDate.setUTCHours(startDate.getUTCHours() - hours_offset);
-                        startDate.setUTCMinutes(startDate.getUTCMinutes() - minutes_offset);
+                        var startDate = moment.tz(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm", tz[1].replace(/"/g, ''));
+                    } else {
+                        var startDate = moment.utc(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm");
                     }
-                    FCevent["start"] = startDate.toISOTZString();
+                    FCevent["start"] = startDate.utc().format("YYYY-MM-DDTHH:mm:ss");
+                    FCevent["start"] += "Z";
                     if (prop.endsWith("VALUE=DATE")) {
                         FCevent["allDay"] = true;
                     }
 
                 } else if (prop.startsWith("DTEND")) {
-                    var stopDate = parseDate(prop, e.VCALENDAR.VEVENT[prop]);
                     var tz = tzidPattern.exec(prop);
                     if (tz){
-                        stopDate.setUTCHours(stopDate.getUTCHours() - hours_offset);
-                        stopDate.setUTCMinutes(stopDate.getUTCMinutes() - minutes_offset);
+                        var stopDate = moment.tz(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm", tz[1].replace(/"/g, ''));
+                    } else {
+                        var stopDate = moment.utc(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm");
                     }
-                    FCevent["end"] = stopDate.toISOTZString();
+
+                    FCevent["end"] = stopDate.utc().format("YYYY-MM-DDTHH:mm:ss");
+                    FCevent["end"] += "Z";
 
                 } else if (prop.startsWith("SUMMARY")) {
                     FCevent["title"] = e.VCALENDAR.VEVENT[prop];
@@ -123,15 +120,81 @@ function Event(datas, calendar) {
                 var attr_name = propertyName;
                 var attr_value = obj[attr_name];
 
-                if (typeof(attr_value) == "object"){
+                if (typeof(attr_value) == "object" && attr_value != null){
                     result += "BEGIN:" + attr_name + "\n";
                     result += this.getICS(attr_value);
                     result += "END:" + attr_name + "\n";
                 } else {
-                    result += attr_name + ":" + attr_value + "\n";
+                    if (attr_value != null) {
+                        result += attr_name + ":" + attr_value + "\n";
+                    } else {
+                        result += attr_name + "\n";
+                    }
                 }
             }
         }
         return result;
     }
+
+    this.findAttrVEvent = function(attrname) {
+        for (prop in this.d.VCALENDAR.VEVENT) {
+            if (prop.startsWith(attrname)){
+                return prop;
+            }
+        }
+        return null;
+
+    }
+
+    this.updateDTSTART = function(start, allday) {
+        var prop = this.findAttrVEvent("DTSTART");
+        var tz = tzidPattern.exec(prop);
+        if (tz){
+            console.log("TZZZZZ");
+            this.d.VCALENDAR.VEVENT[prop] = start.tz(tz[1].replace(/"/g, '')).format("YYYYMMDDTHHmmss");
+            //this.d.VCALENDAR.VEVENT[prop] += "Z";
+            return true;
+        }
+        if (allday) {
+            console.log("ALLDAY");
+            delete this.d.VCALENDAR.VEVENT[prop];
+            console.log(start.format());
+            this.d.VCALENDAR.VEVENT["DTSTART;VALUE=DATE"] = start.format("YYYYMMDD");
+        } else {
+            delete this.d.VCALENDAR.VEVENT[prop];
+            this.d.VCALENDAR.VEVENT["DTSTART"] = start.utc().format("YYYYMMDDTHHmmss");
+            this.d.VCALENDAR.VEVENT["DTSTART"] += "Z";
+        }
+    }
+    this.updateDTEND = function(end, allday) {
+
+        var prop = this.findAttrVEvent("DTEND");
+
+        if (end != null) {
+            var tz = tzidPattern.exec(prop);
+            console.log(tz);
+            console.log(prop);
+            if (tz){
+                console.log("TZZZZZ");
+                console.log(tz);
+                this.d.VCALENDAR.VEVENT[prop] = end.tz(tz[1].replace(/"/g, '')).format("YYYYMMDDTHHmmss");
+                //this.d.VCALENDAR.VEVENT[prop] += "Z";
+                return true;
+            }
+            if (allday) {
+                delete this.d.VCALENDAR.VEVENT[prop];
+                console.log(end.format());
+                this.d.VCALENDAR.VEVENT["DTEND;VALUE=DATE"] = end.format("YYYYMMDD");
+            } else {
+                delete this.d.VCALENDAR.VEVENT[prop];
+                this.d.VCALENDAR.VEVENT["DTEND"] = end.utc().format("YYYYMMDDTHHmmss");
+                this.d.VCALENDAR.VEVENT["DTEND"] += "Z";
+            }
+
+        } else {
+            delete this.d["VCALENDAR"]["VEVENT"]["DTEND"];
+        }
+
+    }
+
 }

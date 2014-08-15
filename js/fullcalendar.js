@@ -85,7 +85,8 @@ function calendar_init() {
         },
 
         eventResize: function( event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view ) {
-            event_send(event);
+            EVENTFORM.show(event, false);
+            EVENTFORM.getValues();
         },
 
     });

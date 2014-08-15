@@ -34,13 +34,19 @@ function EventForm(){
         this.start.val(event.start.format(this.dateFormat));
         this.startHour.val(event.start.format("HH"));
         this.startMinute.val(event.start.format("mm"));
-        this.end.val(event.end.format(this.dateFormat));
-        this.endHour.val(event.end.format("HH"));
-        this.endMinute.val(event.end.format("mm"));
+
+        if (event.hasOwnProperty("end") && event.end != null) {
+            this.end.val(event.end.format(this.dateFormat));
+            this.endHour.val(event.end.format("HH"));
+            this.endMinute.val(event.end.format("mm"));
+        } else {
+            this.end.val("NOEND");
+            this.endHour.val("NOEND");
+            this.endMinute.val("NOEND");
+        }
 
         // If allday event
         if (!event.start.hasTime()){
-            console.log("ALLDAY");
             this.allday.prop("checked", true);
         } else {
             this.allday.prop("checked", false);
@@ -48,8 +54,6 @@ function EventForm(){
 
         this.calendars.find('option').remove();
         $.each(CALENDARS.calendars, function (i, cal) {
-            console.log(i);
-            console.log(cal);
            EVENTFORM.calendars.append($('<option>', {
                 value: cal.name,
                 text : cal.name
@@ -70,7 +74,7 @@ function EventForm(){
         // Existing Event
         } else {
 
-            console.log("existing");
+            console.log(event.id);
             this.title.innerHTML = "Update event";
             this.uid = event.id;
             this.summary.val(event.title);
@@ -90,6 +94,7 @@ function EventForm(){
 
     this.getValues = function(){
         var cal = CALENDARS.find(EVENTFORM.calendars.val());
+        var allday = EVENTFORM.allday.prop("checked");
         if (EVENTFORM.uid){
             var e = this.parentCalendar.getEvent(EVENTFORM.uid);
             $("#calendar").fullCalendar( 'removeEvents', EVENTFORM.uid)
@@ -110,22 +115,19 @@ function EventForm(){
         e.d["VCALENDAR"]["VEVENT"]["LOCATION"] = EVENTFORM.location.val();
 
         var startdate = new moment(EVENTFORM.start.val(), EVENTFORM.dateFormat);
-        var enddate = new moment(EVENTFORM.end.val(), EVENTFORM.dateFormat);
+        startdate.hours(EVENTFORM.startHour.val());
+        startdate.minutes(EVENTFORM.startMinute.val());
 
-        if (EVENTFORM.allday.prop("checked")){
-            console.log(startdate);
-            e.d["VCALENDAR"]["VEVENT"]["DTSTART;VALUE=DATE"] = startdate.format("YYYYMMDD");
-            delete e.d["VCALENDAR"]["VEVENT"]["DTSTART"];
-            e.d["VCALENDAR"]["VEVENT"]["DTEND;VALUE=DATE"] = enddate.format("YYYYMMDD");
-            delete e.d["VCALENDAR"]["VEVENT"]["DTEND"];
+        if (EVENTFORM.end.val() == "NOEND") {
+            var enddate = null;
         } else {
-            startdate.hour(EVENTFORM.startHour.val());
-            startdate.minute(EVENTFORM.startMinute.val());
-            e.d["VCALENDAR"]["VEVENT"]["DTSTART"] = formatDate(startdate);
-            enddate.hour(EVENTFORM.endHour.val());
-            enddate.minute(EVENTFORM.endMinute.val());
-            e.d["VCALENDAR"]["VEVENT"]["DTEND"] = formatDate(enddate);
+            var enddate = new moment(EVENTFORM.end.val(), EVENTFORM.dateFormat);
+            enddate.hours(EVENTFORM.endHour.val());
+            enddate.minutes(EVENTFORM.endMinute.val());
         }
+
+        e.updateDTSTART(startdate, allday);
+        e.updateDTEND(enddate, allday);
         console.log(e.getICS());
 
 
