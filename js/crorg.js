@@ -2,6 +2,8 @@
 var CALENDARS = new Calendars();
 var EVENTFORM = new EventForm();
 var DELFORM = new DelForm();
+var LOADINGBAR = new LoadingBar();
+
 var activeNav = "navdashboard";
 var first_day = moment().day(1);
 first_day.millisecond(0);

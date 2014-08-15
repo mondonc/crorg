@@ -89,6 +89,7 @@ function Calendar(href, colors) {
 
     this.loadEventList = function (start, refetchNeeded){
         console.log("Loading " + this.href + " for " + start.format("YYYYMMDD"));
+        LOADINGBAR.reset();
         var stop = moment(start).add('days', 7);
         var key = formatDate(start);
 
@@ -103,6 +104,10 @@ function Calendar(href, colors) {
             });
             this.urls[key] = urls;
             this.eventsCpt[key] += urls.length;
+            if (urls.length > 0)
+                LOADINGBAR.total += urls.length;
+            else
+                LOADINGBAR.end();
             this.events[key] = {};
             this.loadEvents(this, start, refetchNeeded);
         }, this));
@@ -117,6 +122,7 @@ function Calendar(href, colors) {
                 type: "GET",
                 url: self.urls[key][e_idx],
             }).done(function(data){
+                LOADINGBAR.incr();
                 var e = new Event(data, self);
                 self.events[key][e.uid] = e;
                 self.eventsLoaded[key]++;
@@ -173,16 +179,20 @@ function Calendar(href, colors) {
     }
 
     this.putEvent = function(event) {
+        LOADINGBAR.reset();
         var content = event.getICS();
         ajaxPut(this.href + "/" + event.uid + ".ics", content, (function (obj, s, r){
+                LOADINGBAR.end();
                 console.log("Put success " + event.uid);
                 this.events[this.currentDay][event.uid] = event;
             }).bind(this));
     }
 
     this.delEvent = function(event) {
+        LOADINGBAR.reset();
         var content = event.getICS();
             ajaxDel(this.href + "/" + event.uid + ".ics", content, (function (obj, s, r){
+                LOADINGBAR.end();
                 console.log("Delete success " + event.uid);
                 delete this.events[this.currentDay][event.uid];
             }).bind(this));

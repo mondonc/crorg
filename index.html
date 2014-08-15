@@ -41,7 +41,7 @@
     </ul>
     <ul id="agendabar" class="nav navbar-nav" >
       <li><span class="progress navbar-text" style="width: 100px;">
-        <span class="progress-bar progress-bar-danger" style="width: 30%;"></span>
+        <span id="loading-bar" class="progress-bar progress-bar-danger" style="width: 0%;"></span>
       </span></li>
       <li><a href="#" onclick="$('#calendar').fullCalendar('prev')"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
       <li><a href="#" onclick="$('#calendar').fullCalendar('today')"><span class="glyphicon glyphicon-bookmark"></span></a></li>
@@ -232,6 +232,7 @@
     <script src='datetimepicker/jquery.datetimepicker.js'></script>
     <script src='js/EventForm.js'></script>
     <script src='js/DelForm.js'></script>
+    <script src='js/LoadingBar.js'></script>
     <script src='js/tools.js'></script>
     <script src='js/config.js'></script>
     <script src='js/fullcalendar.js'></script>
