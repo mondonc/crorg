@@ -1,7 +1,7 @@
 // Class
 function EventForm(){
 
-    this.dateFormat = "DD/MM/YYYY"
+    this.dateFormat = "DD/MM/YYYY";
 
     this.title = document.getElementById("eventFormTitle");
     this.summary = $("#eventFormSummary");
