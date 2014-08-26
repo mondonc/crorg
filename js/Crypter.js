@@ -5,7 +5,7 @@ function Crypter(password) {
 
     this.encrypt = function(event, callback) {
 
-        event.d["PRODID"] = "-//CRORG//V0.1//EN";
+        event.d.VCALENDAR.PRODID = "-//CRORG//V0.1//EN";
 
         triplesec.encrypt ({
 
