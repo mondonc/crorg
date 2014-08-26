@@ -55,7 +55,7 @@ function Event(datas, calendar, startdate) {
     this.load = function(callback) {
         this.uid = this.datas.match(/UID:(.*)/)[1];
         this.parseICS(this.d, this.datas.split("\n"), 0);
-        if (this.d["PRODID"] == "CRORG") {
+        if (this.d["PRODID"] == "-//CRORG//V0.1//EN") {
             this.encrypted = true;
             ENCRYPTBAR.total += 3;
             CRYPTER.decrypt(this, callback);
