@@ -16,6 +16,7 @@ function EventForm(){
     this.endMinute = $("#eventFormEndMinute");
     this.calendars = $("#eventFormCalendar");
     this.allday = $("#eventFormAllDay");
+    this.encrypt = $("#eventFormEncrypt");
     this.uid = "";
     this.parentCalendar = null;
 
@@ -60,7 +61,6 @@ function EventForm(){
             }));
         });
 
-        console.log(event);
         // New event
         if (!event.hasOwnProperty("id")){
 
@@ -74,7 +74,6 @@ function EventForm(){
         // Existing Event
         } else {
 
-            console.log(event.id);
             this.title.innerHTML = "Update event";
             this.uid = event.id;
             this.summary.val(event.title);
@@ -82,6 +81,11 @@ function EventForm(){
             this.location.val(event.location);
             this.parentCalendar = event.calendar;
             this.calendars.val(event.calendar.name);
+            if (event.encrypted) {
+                this.encrypt.prop("checked", true);
+            } else {
+                this.encrypt.prop("checked", false);
+            }
             DELFORM.init(event);
         }
 
@@ -95,6 +99,7 @@ function EventForm(){
     this.getValues = function(){
         var cal = CALENDARS.find(EVENTFORM.calendars.val());
         var allday = EVENTFORM.allday.prop("checked");
+        var encrypt = EVENTFORM.encrypt.prop("checked");
         if (EVENTFORM.uid){
             var e = this.parentCalendar.getEvent(EVENTFORM.uid);
             $("#calendar").fullCalendar( 'removeEvents', EVENTFORM.uid)
@@ -107,6 +112,7 @@ function EventForm(){
         } else {
             var e = new Event(EVENT_TEMPLATE, cal);
             e.uid = guid();
+            e.parseICS(e.d, e.datas.split("\n"), 0);
             e.d["VCALENDAR"]["VEVENT"]["UID"] = e.uid;
         }
 
@@ -128,7 +134,7 @@ function EventForm(){
 
         e.updateDTSTART(startdate, allday);
         e.updateDTEND(enddate, allday);
-        console.log(e.getICS());
+        e.encrypted = encrypt;
 
 
         cal.putEvent(e);

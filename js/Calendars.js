@@ -48,9 +48,9 @@ function Calendars() {
         }, this));
     }
 
-    this.loadAllCalendars = function () {
+    this.loadAllCalendars = function (day) {
         for (href_idx in CALENDARS.calendars) {
-            CALENDARS.calendars[href_idx].load();
+            CALENDARS.calendars[href_idx].load(day);
         }
     }
 
@@ -72,9 +72,9 @@ function Calendar(href, colors) {
     this.unconfirmedColor = colors["unconfirmedColor"];
     this.urls = [];
     this.events = {};
-    this.ready = false;
     this.eventsCpt = {};
     this.eventsLoaded = {};
+    this.eventsTotallyLoaded = {};
     this.currentDay = "";
 
     var parts = this.href.split("/");
@@ -83,15 +83,18 @@ function Calendar(href, colors) {
     else
         this.name = parts[parts.length - 2];
 
-    this.load = function (){
-        this.loadEventList(first_day, false);
+    this.load = function (day){
+        var key = formatDate(day);
+        if (!this.events.hasOwnProperty(key))
+            this.loadEventList(day);
     }
 
-    this.loadEventList = function (start, refetchNeeded){
-        console.log("Loading " + this.href + " for " + start.format("YYYYMMDD"));
-        LOADINGBAR.reset();
+    this.loadEventList = function (start){
         var stop = moment(start).add('days', 7);
         var key = formatDate(start);
+        console.log("Loading event list " + this.href + " for " + start.format("YYYY/MM/DD") + " (" + key + ")");
+        LOADINGBAR.reset();
+        ENCRYPTBAR.reset();
 
         this.eventsCpt[key] = 0;
         getEventsList(this.href, start, stop, $.proxy(function (obj, status, r) {
@@ -104,35 +107,41 @@ function Calendar(href, colors) {
             });
             this.urls[key] = urls;
             this.eventsCpt[key] += urls.length;
-            if (urls.length > 0)
+            if (urls.length > 0) {
                 LOADINGBAR.total += urls.length;
-            else
+                ENCRYPTBAR.total += urls.length;
+            } else {
                 LOADINGBAR.end();
+                ENCRYPTBAR.end();
+            }
             this.events[key] = {};
-            this.loadEvents(this, start, refetchNeeded);
+            this.loadEvents(this, start);
         }, this));
     }
 
-    this.loadEvents = function (self, start, refetchNeeded){
+    this.eventLoaded = function(e){
+        e.calendar.events[e.key][e.uid] = e;
+        e.calendar.eventsTotallyLoaded[e.key]++;
+        ENCRYPTBAR.incr();
+        if (e.calendar.eventsTotallyLoaded[e.key] == e.calendar.eventsCpt[e.key]) {
+            refetchEvents();
+        }
+    }
+
+    this.loadEvents = function (self, start){
         var key = formatDate(start);
         self.eventsLoaded[key] = 0;
+        self.eventsTotallyLoaded[key] = 0;
         for (e_idx in self.urls[key]){
             console.log("Downloading " + self.urls[key][e_idx]);
             $.ajax({
                 type: "GET",
                 url: self.urls[key][e_idx],
             }).done(function(data){
+                var e = new Event(data, self, key);
+                e.calendar.eventsLoaded[e.key]++;
                 LOADINGBAR.incr();
-                var e = new Event(data, self);
-                self.events[key][e.uid] = e;
-                self.eventsLoaded[key]++;
-                if (self.eventsLoaded[key] == self.eventsCpt[key]) {
-                    self.ready = true;
-                    if (refetchNeeded) {
-                        refetchEvents();
-                        //refetchSource(self);
-                    }
-                }
+                e.load(self.eventLoaded);
                 return data;
             });
         }
@@ -160,7 +169,7 @@ function Calendar(href, colors) {
             }
             callback(fclist);
         } else {
-            this.loadEventList(start, true)
+            this.loadEventList(start);
         }
     }
 
@@ -178,25 +187,32 @@ function Calendar(href, colors) {
         };
     }
 
-    this.putEvent = function(event) {
-        LOADINGBAR.reset();
-        var content = event.getICS();
-        ajaxPut(this.href + "/" + event.uid + ".ics", content, (function (obj, s, r){
+    this.eventPuted = function(event) {
+        ENCRYPTBAR.end();
+        ajaxPut(event.calendar.href + "/" + event.uid + ".ics", event.content, function (obj, s, r){
                 LOADINGBAR.end();
                 console.log("Put success " + event.uid);
-                this.events[this.currentDay][event.uid] = event;
-            }).bind(this));
+                event.calendar.events[event.calendar.currentDay][event.uid] = event;
+            });
     }
+
+    this.putEvent = function(event) {
+        LOADINGBAR.reset();
+        ENCRYPTBAR.reset();
+        if (event.encrypted) {
+            ENCRYPTBAR.total = 3;
+        }
+        event.getICS(this.eventPuted);
+    }
+
+
 
     this.delEvent = function(event) {
         LOADINGBAR.reset();
-        var content = event.getICS();
-            ajaxDel(this.href + "/" + event.uid + ".ics", content, (function (obj, s, r){
+        ajaxDel(event.calendar.href + "/" + event.uid + ".ics", "", function (obj, s, r){
                 LOADINGBAR.end();
                 console.log("Delete success " + event.uid);
-                delete this.events[this.currentDay][event.uid];
-            }).bind(this));
-
-                return null;
+                delete event.calendar.events[event.calendar.currentDay][event.uid];
+        });
     }
 }

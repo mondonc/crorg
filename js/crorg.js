@@ -2,7 +2,9 @@
 var CALENDARS = new Calendars();
 var EVENTFORM = new EventForm();
 var DELFORM = new DelForm();
-var LOADINGBAR = new LoadingBar();
+var LOADINGBAR = new LoadingBar('#loading-bar');
+var ENCRYPTBAR = new LoadingBar('#encrypt-bar');
+var CRYPTER = new Crypter("toto");
 
 var activeNav = "navdashboard";
 var first_day = moment().day(1);
@@ -41,6 +43,19 @@ function changeView(id){
 }
 
 function refresh(){}
+function download2months(){
+    for (i=1;i<8;i++) {
+        var day = moment().day(1 + (7*i));
+        day.utc().millisecond(0);
+        day.utc().second(0);
+        day.utc().minute(0);
+        day.utc().hour(0);
+        CALENDARS.loadAllCalendars(day);
+    }
+
+
+}
+
 function exit(){}
 
 

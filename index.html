@@ -37,11 +37,15 @@
       <li id="navtask"><a href="#" onclick="changeView('navtask');"><span class="glyphicon glyphicon-list-alt"></span></a></li>
       <li id="navnote"><a href="#" onclick="changeView('navnote');"><span class="glyphicon glyphicon-pencil"></span></a></li>
       <li id="navrefresh"><a href="#" onclick="refresh();"><span class="glyphicon glyphicon-repeat"></span></a></li>
+      <li id="navrefresh"><a href="#" onclick="download2months();"><span class="glyphicon glyphicon-repeat"></span></a></li>
       <li id="navexit"><a href="#" onclick="exit();"><span class="glyphicon glyphicon-off"></span></a></li>
     </ul>
     <ul id="agendabar" class="nav navbar-nav" >
       <li><span class="progress navbar-text" style="width: 100px;">
         <span id="loading-bar" class="progress-bar progress-bar-danger" style="width: 0%;"></span>
+      </span></li>
+      <li><span class="progress navbar-text" style="width: 100px;">
+        <span id="encrypt-bar" class="progress-bar progress-bar-danger" style="width: 0%;"></span>
       </span></li>
       <li><a href="#" onclick="$('#calendar').fullCalendar('prev')"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
       <li><a href="#" onclick="$('#calendar').fullCalendar('today')"><span class="glyphicon glyphicon-bookmark"></span></a></li>
@@ -192,6 +196,9 @@
                 <input id="eventFormAllDay" type="checkbox"> All Day
               </label>
               <label>
+                <input id="eventFormEncrypt" type="checkbox"> Encrypted
+              </label>
+              <label>
                 <input type="checkbox"> Confirmed
               </label>
                 <select id="eventFormCalendar" class="form-control">
@@ -239,6 +246,8 @@
     <script src='js/Calendars.js'></script>
     <script src='js/Event.js'></script>
     <script src='js/caldav.js'></script>
+    <script src='js/triplesec-3.0.0-min.js'></script>
+    <script src='js/Crypter.js'></script>
     <script src='js/crorg.js'></script>
     <script src='bootstrap/js/bootstrap.min.js'></script>
     <script>

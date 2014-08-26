@@ -13,8 +13,13 @@ END:VCALENDAR\n\
 ";
 
 // Event class
-function Event(datas, calendar) {
+function Event(datas, calendar, startdate) {
 
+    this.calendar = calendar;
+    this.d = {};
+    this.key = startdate;
+    this.encrypted = false;
+    this.datas = datas;
 
     this.parseICS = function(parent_object, data, idx) {
 
@@ -47,12 +52,16 @@ function Event(datas, calendar) {
         //return idx;
     }
 
-    this.calendar = calendar;
-    this.d = {};
-
-    if (datas) {
-        this.uid = datas.match(/UID:(.*)/)[1];
-        this.parseICS(this.d, datas.split("\n"), 0);
+    this.load = function(callback) {
+        this.uid = this.datas.match(/UID:(.*)/)[1];
+        this.parseICS(this.d, this.datas.split("\n"), 0);
+        if (this.d["PRODID"] == "CRORG") {
+            this.encrypted = true;
+            ENCRYPTBAR.total += 3;
+            CRYPTER.decrypt(this, callback);
+        } else {
+            callback(this);
+        }
     }
 
     this.getFC = function() {
@@ -104,15 +113,22 @@ function Event(datas, calendar) {
             FCevent["backgroundColor"] = this.calendar.backgroundColor;
             FCevent["borderColor"] = this.calendar.borderColor;
             FCevent["calendar"] = this.calendar;
+            FCevent["encrypted"] = this.encrypted;
             return FCevent;
         }
         return null;
     }
 
-    this.getICS = function(obj) {
-        if (typeof obj == "undefined") {
-            obj = this.d;
+    this.getICS = function(callback) {
+        if (this.encrypted) {
+            CRYPTER.encrypt(this, callback);
+        } else {
+            this.content = this._getICS(this.d);
+            callback(this);
         }
+    }
+
+    this._getICS = function(obj) {
         var result = "";
         for(var propertyName in obj) {
 
@@ -122,7 +138,7 @@ function Event(datas, calendar) {
 
                 if (typeof(attr_value) == "object" && attr_value != null){
                     result += "BEGIN:" + attr_name + "\n";
-                    result += this.getICS(attr_value);
+                    result += this._getICS(attr_value);
                     result += "END:" + attr_name + "\n";
                 } else {
                     if (attr_value != null) {
@@ -150,15 +166,12 @@ function Event(datas, calendar) {
         var prop = this.findAttrVEvent("DTSTART");
         var tz = tzidPattern.exec(prop);
         if (tz){
-            console.log("TZZZZZ");
             this.d.VCALENDAR.VEVENT[prop] = start.tz(tz[1].replace(/"/g, '')).format("YYYYMMDDTHHmmss");
             //this.d.VCALENDAR.VEVENT[prop] += "Z";
             return true;
         }
         if (allday) {
-            console.log("ALLDAY");
             delete this.d.VCALENDAR.VEVENT[prop];
-            console.log(start.format());
             this.d.VCALENDAR.VEVENT["DTSTART;VALUE=DATE"] = start.format("YYYYMMDD");
         } else {
             delete this.d.VCALENDAR.VEVENT[prop];
@@ -172,18 +185,13 @@ function Event(datas, calendar) {
 
         if (end != null) {
             var tz = tzidPattern.exec(prop);
-            console.log(tz);
-            console.log(prop);
             if (tz){
-                console.log("TZZZZZ");
-                console.log(tz);
                 this.d.VCALENDAR.VEVENT[prop] = end.tz(tz[1].replace(/"/g, '')).format("YYYYMMDDTHHmmss");
                 //this.d.VCALENDAR.VEVENT[prop] += "Z";
                 return true;
             }
             if (allday) {
                 delete this.d.VCALENDAR.VEVENT[prop];
-                console.log(end.format());
                 this.d.VCALENDAR.VEVENT["DTEND;VALUE=DATE"] = end.format("YYYYMMDD");
             } else {
                 delete this.d.VCALENDAR.VEVENT[prop];

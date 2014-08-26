@@ -1,39 +1,43 @@
 
-function LoadingBar(){
+function LoadingBar(el){
 
-    this.lb = $('#loading-bar')
+    this.lb = $(el);
     this.total = 0;
     this.cpt = 0;
 
     this.setTotal = function (value) {
-        LOADINGBAR.total = value;
+        this.total = value;
     }
 
     this.incr = function () {
-        LOADINGBAR.cpt++;
-        if (LOADINGBAR.cpt == LOADINGBAR.total) {
-            LOADINGBAR.end()
+        this.cpt++;
+        if (this.cpt == this.total) {
+            this.end()
         } else {
-            LOADINGBAR.set( (100 / LOADINGBAR.total) * LOADINGBAR.cpt);
+            this.set( (100 / this.total) * this.cpt);
         }
     }
 
     this.end = function() {
-            LOADINGBAR.set(100);
-            LOADINGBAR.lb.attr('class', 'progress-bar progress-bar-success');
-            LOADINGBAR.total = 0;
-            LOADINGBAR.cpt = 0;
+            this.set(100);
+            this.total = 0;
+            this.cpt = 0;
+            this.lb.attr('class', 'progress-bar progress-bar-success');
     }
 
     this.set = function (value){
-        LOADINGBAR.lb.css('width', value);
+        if (value < 100)
+            this.lb.attr('class', 'progress-bar progress-bar-danger');
+        else
+            this.lb.attr('class', 'progress-bar progress-bar-success');
+
+        this.lb.css('width', value);
     }
 
     this.reset = function (){
-        //LOADINGBAR.lb.animate({ width: "0%" },0);
-        LOADINGBAR.set(0);
-        LOADINGBAR.lb.attr('class', 'progress-bar progress-bar-danger');
-        LOADINGBAR.total = 0;
-        LOADINGBAR.cpt = 0;
+        //this.lb.animate({ width: "0%" },0);
+        this.set(0);
+        this.total = 0;
+        this.cpt = 0;
     }
 }
