@@ -75,4 +75,12 @@ function LoadingBar(el){
         //for (k in this.total) this.total[k] = 0;
         //for (k in this.cpt) this.cpt[k] = 0;
     }
+
+    this.resetHard = function () {
+        this.reset();
+        this.total = {};
+        this.len = 0;
+        this.nbempty = 0;
+        this.cpt = {};
+    }
 }

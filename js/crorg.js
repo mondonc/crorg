@@ -42,7 +42,15 @@ function changeView(id){
         }
 }
 
-function refresh(){}
+function refresh(){
+    $('#calendar').fullCalendar( 'destroy' )
+    CALENDARS = new Calendars();
+    //calendar_init();
+    LOADINGBAR.resetHard();
+    ENCRYPTBAR.resetHard();
+    CALENDARS.load();
+}
+
 function download2months(){
     for (i=1;i<9;i++) {
         var day = moment().day(1 + (7*i));
