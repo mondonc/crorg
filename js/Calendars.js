@@ -192,7 +192,6 @@ function Calendar(href, colors) {
         ajaxPut(event.calendar.href + "/" + event.uid + ".ics", event.content, function (obj, s, r){
                 LOADINGBAR.end();
                 console.log("Put success " + event.uid);
-                event.calendar.events[event.calendar.currentDay][event.uid] = event;
             });
     }
 
@@ -202,6 +201,7 @@ function Calendar(href, colors) {
         if (event.encrypted) {
             ENCRYPTBAR.total = 3;
         }
+        event.calendar.events[event.calendar.currentDay][event.uid] = event;
         event.getICS(this.eventPuted);
     }
 

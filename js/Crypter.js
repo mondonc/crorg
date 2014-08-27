@@ -6,6 +6,9 @@ function Crypter(password) {
     this.encrypt = function(event, callback) {
 
         event.d.VCALENDAR.PRODID = "-//CRORG//V0.1//EN";
+        var sum = event.d.VCALENDAR.VEVENT.SUMMARY;
+        var loc = event.d.VCALENDAR.VEVENT.LOCATION;
+        var des = event.d.VCALENDAR.VEVENT.DESCRIPTION;
 
         triplesec.encrypt ({
 
@@ -36,6 +39,9 @@ function Crypter(password) {
                             if (! err) {
                                 event.d.VCALENDAR.VEVENT.LOCATION = buff.toString('hex');
                                 event.content = event._getICS(event.d);
+                                event.d.VCALENDAR.VEVENT.LOCATION = loc;
+                                event.d.VCALENDAR.VEVENT.DESCRIPTION = des;
+                                event.d.VCALENDAR.VEVENT.SUMMARY = sum;
                                 callback(event);
                             }
                         });
