@@ -26,6 +26,11 @@ function Event(datas, calendar, startdate) {
         while (idx < data.length) {
             if (data[idx]) {
 
+                if (data[idx].startsWith(" ")) {
+                    parent_object[attr_name] += attr_value.trim();
+                    idx += 1;
+                    continue;
+                }
                 var line = data[idx].partition(":");
                 var attr_name = line[0];
                 var attr_value = line[1];
