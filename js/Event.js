@@ -27,7 +27,7 @@ function Event(datas, calendar, startdate) {
             if (data[idx]) {
 
                 if (data[idx].startsWith(" ")) {
-                    parent_object[attr_name] += attr_value.trim();
+                    parent_object[attr_name] += data[idx].trim();
                     idx += 1;
                     continue;
                 }
