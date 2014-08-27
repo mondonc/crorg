@@ -16,7 +16,7 @@ function Crypter(password) {
             key: new triplesec.Buffer(CRYPTER.password),
             //progress_hook: function (obj) { console.log(obj); }
         }, function(err, buff) {
-            ENCRYPTBAR.incr();
+            ENCRYPTBAR.incr(event.calendar.name);
             if (! err) {
                 event.d.VCALENDAR.VEVENT.SUMMARY = buff.toString('hex');
 
@@ -26,7 +26,7 @@ function Crypter(password) {
                     key: new triplesec.Buffer(CRYPTER.password),
                     //progress_hook: function (obj) { /* ... */ }
                 }, function(err, buff) {
-                    ENCRYPTBAR.incr();
+                    ENCRYPTBAR.incr(event.calendar.name);
                     if (! err) {
                         event.d.VCALENDAR.VEVENT.DESCRIPTION = buff.toString('hex');
                         triplesec.encrypt ({
@@ -35,7 +35,7 @@ function Crypter(password) {
                             key: new triplesec.Buffer(CRYPTER.password),
                             //progress_hook: function (obj) { /* ... */ }
                         }, function(err, buff) {
-                            ENCRYPTBAR.incr();
+                            ENCRYPTBAR.incr(event.calendar.name);
                             if (! err) {
                                 event.d.VCALENDAR.VEVENT.LOCATION = buff.toString('hex');
                                 event.content = event._getICS(event.d);
@@ -60,7 +60,7 @@ function Crypter(password) {
             //progress_hook: function (obj) { /* ... */ }
             //progress_hook: function (obj) { console.log(obj); }
         }, function(err, buff) {
-            ENCRYPTBAR.incr();
+            ENCRYPTBAR.incr(event.calendar.name);
             if (! err) {
                 event.d.VCALENDAR.VEVENT.SUMMARY = buff.toString();
 
@@ -70,7 +70,7 @@ function Crypter(password) {
                     key: new triplesec.Buffer(CRYPTER.password),
                     //progress_hook: function (obj) { /* ... */ }
                 }, function(err, buff) {
-                    ENCRYPTBAR.incr();
+                    ENCRYPTBAR.incr(event.calendar.name);
                     if (! err) {
                         event.d.VCALENDAR.VEVENT.DESCRIPTION = buff.toString();
                         triplesec.decrypt ({
@@ -79,7 +79,7 @@ function Crypter(password) {
                             key: new triplesec.Buffer(CRYPTER.password),
                             //progress_hook: function (obj) { /* ... */ }
                         }, function(err, buff) {
-                            ENCRYPTBAR.incr();
+                            ENCRYPTBAR.incr(event.calendar.name);
                             if (! err) {
                                 event.d.VCALENDAR.VEVENT.LOCATION = buff.toString();
                                 callback(event);

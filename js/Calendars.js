@@ -42,6 +42,8 @@ function Calendars() {
             this.calendarList = calendarList;
             for (href_idx in this.calendarList) {
                 this.calendars[href_idx] = new Calendar(this.calendarList[href_idx], COLORS[href_idx]);
+                LOADINGBAR.registre(this.calendars[href_idx].name);
+                ENCRYPTBAR.registre(this.calendars[href_idx].name);
                 addEventSource(this.calendars[href_idx].getEventSource());
             }
             //CALENDARS.loadAllCalendars();
@@ -89,12 +91,14 @@ function Calendar(href, colors) {
             this.loadEventList(day);
     }
 
-    this.loadEventList = function (start){
+    this.loadEventList = function (start, notalone){
         var stop = moment(start).add('days', 7);
         var key = formatDate(start);
         console.log("Loading event list " + this.href + " for " + start.format("YYYY/MM/DD") + " (" + key + ")");
-        LOADINGBAR.reset();
-        ENCRYPTBAR.reset();
+        if (! notalone ) {
+            LOADINGBAR.reset();
+            ENCRYPTBAR.reset();
+        }
 
         this.eventsCpt[key] = 0;
         getEventsList(this.href, start, stop, $.proxy(function (obj, status, r) {
@@ -108,11 +112,11 @@ function Calendar(href, colors) {
             this.urls[key] = urls;
             this.eventsCpt[key] += urls.length;
             if (urls.length > 0) {
-                LOADINGBAR.total += urls.length;
-                ENCRYPTBAR.total += urls.length;
+                LOADINGBAR.addTotal(this.name, urls.length);
+                ENCRYPTBAR.addTotal(this.name, urls.length);
             } else {
-                LOADINGBAR.end();
-                ENCRYPTBAR.end();
+                LOADINGBAR.empty();
+                ENCRYPTBAR.empty();
             }
             this.events[key] = {};
             this.loadEvents(this, start);
@@ -122,7 +126,7 @@ function Calendar(href, colors) {
     this.eventLoaded = function(e){
         e.calendar.events[e.key][e.uid] = e;
         e.calendar.eventsTotallyLoaded[e.key]++;
-        ENCRYPTBAR.incr();
+        ENCRYPTBAR.incr(e.calendar.name);
         if (e.calendar.eventsTotallyLoaded[e.key] == e.calendar.eventsCpt[e.key]) {
             refetchEvents();
         }
@@ -140,7 +144,7 @@ function Calendar(href, colors) {
             }).done(function(data){
                 var e = new Event(data, self, key);
                 e.calendar.eventsLoaded[e.key]++;
-                LOADINGBAR.incr();
+                LOADINGBAR.incr(self.name);
                 e.load(self.eventLoaded);
                 return data;
             });
@@ -199,7 +203,7 @@ function Calendar(href, colors) {
         LOADINGBAR.reset();
         ENCRYPTBAR.reset();
         if (event.encrypted) {
-            ENCRYPTBAR.total = 3;
+            ENCRYPTBAR.setTotal(event.calendar.name, 3);
         }
         event.calendar.events[event.calendar.currentDay][event.uid] = event;
         event.getICS(this.eventPuted);

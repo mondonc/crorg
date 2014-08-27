@@ -62,7 +62,7 @@ function Event(datas, calendar, startdate) {
         this.parseICS(this.d, this.datas.split("\n"), 0);
         if (this.d.VCALENDAR.PRODID == "-//CRORG//V0.1//EN") {
             this.encrypted = true;
-            ENCRYPTBAR.total += 3;
+            ENCRYPTBAR.setTotal(this.calendar.name, ENCRYPTBAR.total[this.calendar.name]+3);
             CRYPTER.decrypt(this, callback);
         } else {
             callback(this);

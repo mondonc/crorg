@@ -44,13 +44,13 @@ function changeView(id){
 
 function refresh(){}
 function download2months(){
-    for (i=1;i<8;i++) {
+    for (i=1;i<9;i++) {
         var day = moment().day(1 + (7*i));
         day.utc().millisecond(0);
         day.utc().second(0);
         day.utc().minute(0);
         day.utc().hour(0);
-        CALENDARS.loadAllCalendars(day);
+        CALENDARS.loadAllCalendars(day, true);
     }
 
 
