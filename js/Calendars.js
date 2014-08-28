@@ -46,7 +46,7 @@ function Calendars() {
                 ENCRYPTBAR.registre(this.calendars[href_idx].name);
                 addEventSource(this.calendars[href_idx].getEventSource());
             }
-            //CALENDARS.loadAllCalendars();
+            CALENDARS.loadAllCalendars(first_day);
         }, this));
     }
 
@@ -127,6 +127,13 @@ function Calendar(href, colors) {
         e.calendar.events[e.key][e.uid] = e;
         e.calendar.eventsTotallyLoaded[e.key]++;
         ENCRYPTBAR.incr(e.calendar.name);
+        if (start = e.isToday()) {
+            //console.log("TODAY : " + e.uid + " " + start);
+            DASHBOARD.pushToday(e);
+        } else if (start = e.isTomorow()) {
+            //console.log("TOMOROW : " + e.uid + " " + start);
+            DASHBOARD.pushTomorow(e);
+        }
         if (e.calendar.eventsTotallyLoaded[e.key] == e.calendar.eventsCpt[e.key]) {
             refetchEvents();
         }

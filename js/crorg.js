@@ -5,13 +5,15 @@ var DELFORM = new DelForm();
 var LOADINGBAR = new LoadingBar('#loading-bar');
 var ENCRYPTBAR = new LoadingBar('#encrypt-bar');
 var CRYPTER = new Crypter("toto");
+var DASHBOARD = new Dashboard();
 
 var activeNav = "navdashboard";
-var first_day = moment().day(1);
-first_day.millisecond(0);
-first_day.second(0);
-first_day.minute(0);
-first_day.hour(0);
+var today = moment();
+var first_day = moment().utc().day(1);
+first_day.utc().millisecond(0);
+first_day.utc().second(0);
+first_day.utc().minute(0);
+first_day.utc().hour(0);
 
 function refetchIfneeded(){
     //if (ICScpt != ICScpt_last && ICScpt == ICSloaded){
@@ -53,7 +55,7 @@ function refresh(){
 
 function download2months(){
     for (i=1;i<9;i++) {
-        var day = moment().day(1 + (7*i));
+        var day = moment().utc().day(1 + (7*i));
         day.utc().millisecond(0);
         day.utc().second(0);
         day.utc().minute(0);
@@ -72,8 +74,8 @@ $(document).ready(function() {
 
     //calendar_init();
     calendar_init();
-    //CALENDARS.load(calendar_init);
     CALENDARS.load();
+    //CALENDARS.load(calendar_init);
     //setInterval(function(){refetchIfneeded()}, 5000);
 
 });

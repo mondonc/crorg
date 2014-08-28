@@ -66,11 +66,19 @@ function parseDate( key, str) {
 
 function addEventSource(es){
     console.log("Adding eventSource");
-    $('#calendar').fullCalendar('addEventSource', es);
+    try {
+        $('#calendar').fullCalendar('addEventSource', es);
+    } catch (err) {
+        console.log("NOP");
+    }
 }
 
 function refetchEvents(){
-    $('#calendar').fullCalendar('refetchEvents');
+    try {
+        $('#calendar').fullCalendar('refetchEvents');
+    } catch (err) {
+        console.log("NOP");
+    }
 }
 
 function refetchSource(calendar){

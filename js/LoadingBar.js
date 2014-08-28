@@ -37,14 +37,14 @@ function LoadingBar(el){
         for (cal in this.cpt) {
             if (this.total[cal] > 0){
                 part = ( (100 / this.len) / (this.total[cal])) * this.cpt[cal];
-                console.log(this.lb.selector + " : " + cal + " : " + part + "%");
+                //console.log(this.lb.selector + " : " + cal + " : " + part + "%");
                 total += part;
             } else {
                 total += (100 / this.len);
             }
-            console.log(this.lb.selector + " : " + cal + " (global) : " + total + "%");
-            console.log(this.lb.selector + " : " + cal + " (total in cal): " + this.total[cal]);
-            console.log(this.lb.selector + " : " + cal + " (cpt in cal): " + this.cpt[cal]);
+            //console.log(this.lb.selector + " : " + cal + " (global) : " + total + "%");
+            //console.log(this.lb.selector + " : " + cal + " (total in cal): " + this.total[cal]);
+            //console.log(this.lb.selector + " : " + cal + " (cpt in cal): " + this.cpt[cal]);
         }
         if (total == 100) {
             for (k in this.total) this.total[k] = 0;

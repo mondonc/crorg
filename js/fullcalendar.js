@@ -84,6 +84,11 @@ function calendar_init() {
             else $('#loading').hide();
         },
 
+        //viewRender: function(view, element) {
+
+
+        //},
+
         eventResize: function( event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view ) {
             EVENTFORM.show(event, false);
             EVENTFORM.getValues();

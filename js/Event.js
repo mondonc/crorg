@@ -210,4 +210,63 @@ function Event(datas, calendar, startdate) {
 
     }
 
+    this.getTableLine = function () {
+        var s = this.getMomentStart();
+        s.tz();
+        return "<tr><td><b>" + moment(s.toDate()).format("HH:mm") + "</b></td><td>" + this.d.VCALENDAR.VEVENT.SUMMARY + "</td><td><i>" + this.d.VCALENDAR.VEVENT.DESCRIPTION + "</i></td><td>(" + this.d.VCALENDAR.VEVENT.LOCATION + ")</td></tr>";
+
+    }
+
+
+
+    this.getMomentStart = function () {
+        var prop = this.findAttrVEvent("DTSTART");
+        var tz = tzidPattern.exec(prop);
+        //this.d.VCALENDAR.VEVENT["DTSTART;VALUE=DATE"] = start.format("YYYYMMDD");
+        if (tz){
+            var start = moment.tz(this.d.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm", tz[1].replace(/"/g, ''));
+        } else {
+            var start = moment.utc(this.d.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm");
+        }
+        return start.utc();
+    }
+
+    this.isToday = function() {
+        var start = this.getMomentStart();
+           if (start.isSame(moment().utc(), 'day')) {
+            return start;
+        } else {
+            return false;
+        }
+
+    }
+
+    this.isTomorow = function() {
+        var start = this.getMomentStart();
+        if (start.isSame(moment().utc().add('d', 1), 'day')) {
+            return start;
+        } else {
+            return false;
+        }
+
+    }
+
+    this.getMomentStop = function () {
+
+        var prop = this.findAttrVEvent("DTEND");
+
+        if (!prop) {
+            return null;
+        }
+
+        var tz = tzidPattern.exec(prop);
+        //this.d.VCALENDAR.VEVENT["DTSTART;VALUE=DATE"] = start.format("YYYYMMDD");
+        if (tz){
+            var stop = moment.tz(this.d.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm", tz[1].replace(/"/g, ''));
+        } else {
+            var stop = moment.utc(this.d.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm");
+        }
+        return stop.utc();
+    }
+
 }
