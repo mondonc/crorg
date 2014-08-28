@@ -12,6 +12,11 @@ function Dashboard() {
         l.push(e);
     }
 
+    this._sort = function (l) {
+        l.sort(function(a, b) {
+            return a.getMomentStart() - b.getMomentStart();
+        })
+    }
 
     this.pushToday = function (event) {
         this._push(this.todayEvents, event);
@@ -27,6 +32,7 @@ function Dashboard() {
 
         el.innerHTML = "";
         m.innerHTML = "";
+        this._sort(l);
         if (l.length == 0) {
             m.innerHTML = "Nothing to do, yeah !";
         } else {
