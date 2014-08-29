@@ -112,6 +112,8 @@ function Todo(datas, calendar) {
     }
 
     this.getTableLine = function () {
-        return "<tr><td>" + this.d.VCALENDAR.VTODO.SUMMARY + "</td><td><i>" + this.d.VCALENDAR.VTODO.STATUS + "</i></td><td>(" + this.d.VCALENDAR.VTODO["PERCENT-COMPLETE"] + "%)</td></tr>";
+        var per = this.d.VCALENDAR.VTODO["PERCENT-COMPLETE"];
+        if (!per) per = 0;
+        return "<tr><td><b>" + this.d.VCALENDAR.VTODO.SUMMARY + "</b></td><td><i>" + this.d.VCALENDAR.VTODO.STATUS + "</i></td><td>(" + per + "%)</td></tr>";
     }
 }

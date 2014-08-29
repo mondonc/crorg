@@ -1,21 +1,3 @@
-KNOWN_TODO = {
-    "Familly" : {
-        element: document.getElementById("dashboard_todo_Familly"),
-        msg: document.getElementById("dashboard_todo_Familly_msg"),
-    },
-    "Work" : {
-        element: document.getElementById("dashboard_todo_Work"),
-        msg:document.getElementById("dashboard_todo_Work_msg"),
-    },
-    "Personal" : {
-        element: document.getElementById("dashboard_todo_Personal"),
-        msg:document.getElementById("dashboard_todo_Personal_msg"),
-    },
-    "Other" : {
-        element: document.getElementById("dashboard_todo_Other"),
-        msg:document.getElementById("dashboard_todo_Other_msg"),
-    },
-};
 
 function Dashboard() {
 
@@ -29,7 +11,7 @@ function Dashboard() {
     this.todoEl = document.getElementById("dashboard_todo");
     this.todoMsg = document.getElementById("dashboard_todo_msg");
 
-    for (cat in KNOWN_TODO) { this.todos[cat] = []; }
+    //for (cat in KNOWN_TODO) { this.todos[cat] = []; }
 
     this._push = function(l, e) {
         l.push(e);
@@ -79,30 +61,76 @@ function Dashboard() {
     this.pushTodo = function (todo) {
         this.todoDeleteIfExist(todo);
         var categories = todo.d.VCALENDAR.VTODO.CATEGORIES;
-        if (KNOWN_TODO.hasOwnProperty(categories)) {
-            this.todos[categories].push(todo);
-        } else {
-            this.todos["Other"].push(todo);
-        }
+        if (!this.todos.hasOwnProperty(categories)) {
+            this.todos[categories] = [];
+        } //else {
+        this.todos[categories].push(todo);
+        //    this.todos["Other"].push(todo);
+        //}
         this.refreshTodo();
     }
 
     this.refreshTodo = function () {
 
         // Clear
-        for (cat in this.todos) {
-            KNOWN_TODO[cat]["element"].innerHTML = "";
-            KNOWN_TODO[cat]["msg"].innerHTML = "";
-        }
+        document.getElementById("todos_0").innerHTML = "";
+        document.getElementById("todos_1").innerHTML = "";
+        //for (cat in this.todos) {
+            //KNOWN_TODO[cat]["element"].innerHTML = "";
+            //KNOWN_TODO[cat]["msg"].innerHTML = "";
+        //}
 
+        var cpt = 0;
         for (cat in this.todos) {
-            if (this.todos[cat].length == 0) {
-                KNOWN_TODO[cat]["msg"].innerHTML = "Nothing to do, yeah !";
-            } else {
-                for (todo in this.todos[cat]) {
-                    KNOWN_TODO[cat]["element"].innerHTML += this.todos[cat][todo].getTableLine();
-                }
+
+            var todo_class = "default";
+            var todo_icon = "th-list";
+            var begin = -1;
+            if (cat == "Familly") {
+                todo_class = "danger";
+                todo_icon = "heart";
+                begin = 0;
+            } else if (cat == "Work") {
+                todo_class = "warning";
+                todo_icon = "euro";
+                begin = 1;
+            } else if (cat == "Personal") {
+                todo_class = "success";
+                todo_icon = "user";
+                begin = 1;
             }
+
+            var content = '<div id="todo_' + cat + '" class="panel panel-' + todo_class + '">' +
+              '<div class="panel-heading">' +
+                '<h3 class="panel-title"><span class="glyphicon glyphicon-' + todo_icon + '"></span> ' + cat + '</h3>' +
+              '</div>' +
+              '<table class="table table-hover" id="todo_' + cat + '_table">' +
+              '</table>' +
+            '</div>'
+
+            if (begin == 0) {
+                var old_content = document.getElementById("todos_0").innerHTML;
+                document.getElementById("todos_0").innerHTML = content;
+                document.getElementById("todos_0").innerHTML += old_content;
+                cpt = 0;
+            } else if (begin == 1){
+                var old_content = document.getElementById("todos_1").innerHTML;
+                document.getElementById("todos_1").innerHTML = content;
+                document.getElementById("todos_1").innerHTML += old_content;
+                cpt = 1;
+            } else {
+                var key = "todos_" + cpt%2;
+                document.getElementById(key).innerHTML += content;
+            }
+                cpt++;
+
+            for (todo in this.todos[cat]) {
+                document.getElementById("todo_" + cat + "_table").innerHTML += this.todos[cat][todo].getTableLine();
+            }
+            //if (this.todos[cat].length == 0) {
+            //    KNOWN_TODO[cat]["msg"].innerHTML = "Nothing to do, yeah !";
+            //} else {
+            //}
         }
     }
 
