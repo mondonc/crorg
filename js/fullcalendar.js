@@ -97,12 +97,6 @@ function calendar_init() {
     });
 }
 
-function addToDos ( e ,c )
-{
-    console.log("addToDos");
-    console.log(e);
-}
-
 function removeEvent ( href )
 {
     console.log("removeEvent");

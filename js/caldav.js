@@ -32,6 +32,32 @@ function getEventsList(url, start, stop, callback) {
     return jQuery.ajax (params);
 }
 
+function getTodosList(url, callback) {
+    console.log("Getting todolist");
+    var params = {
+        contentType: 'text/xml',
+        data: '<?xml version="1.0" encoding="utf-8" ?>' + '\n' +
+            '<C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">' + '\n' +
+                '<D:prop>' + '\n' +
+                '<C:calendar-data />' + '\n' +
+                '</D:prop>' + '\n' +
+                '<C:filter>' + '\n' +
+                    '<C:comp-filter name="VCALENDAR">' + '\n' +
+                        '<C:comp-filter name="VTODO" />' + '\n' +
+                    '</C:comp-filter>' + '\n' +
+                '</C:filter>' + '\n' +
+            '</C:calendar-query>',
+        password: encodeURIComponent(PASSWORD),
+        username: encodeURIComponent(USERNAME),
+        type: 'REPORT',
+        url: url,
+        success: callback,
+        withCredentials: true,
+    };
+    return jQuery.ajax (params);
+}
+
+
 
 
 function getCalendarData(url, callback) {

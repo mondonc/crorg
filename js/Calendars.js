@@ -53,6 +53,7 @@ function Calendars() {
     this.loadAllCalendars = function (day) {
         for (href_idx in CALENDARS.calendars) {
             CALENDARS.calendars[href_idx].load(day);
+            CALENDARS.calendars[href_idx].loadTodosList();
         }
     }
 
@@ -72,7 +73,9 @@ function Calendar(href, colors) {
     this.backgroundColor = colors["backgroundColor"];
     this.textColor = colors["textColor"];
     this.unconfirmedColor = colors["unconfirmedColor"];
-    this.urls = [];
+    this.todosUrls = [];
+    this.todos = {};
+    this.eventsUrls = [];
     this.events = {};
     this.eventsCpt = {};
     this.eventsLoaded = {};
@@ -89,6 +92,22 @@ function Calendar(href, colors) {
         var key = formatDate(day);
         if (!this.events.hasOwnProperty(key))
             this.loadEventList(day);
+    }
+
+    this.loadTodosList = function (){
+        getTodosList(this.href, $.proxy(function (obj, status, r) {
+            console.log(r.responseXML);
+            var urls = [];
+            $(r.responseXML).find('href').each(function(index, element){
+                el = $(element).text();
+                if (el.endsWith(".ics")) {
+                    urls.push(el);
+                }
+            });
+            this.todosUrls = urls;
+            this.todos = {};
+            this.loadTodos(this);
+        }, this));
     }
 
     this.loadEventList = function (start, notalone){
@@ -109,7 +128,7 @@ function Calendar(href, colors) {
                     urls.push(el);
                 }
             });
-            this.urls[key] = urls;
+            this.eventsUrls[key] = urls;
             this.eventsCpt[key] += urls.length;
             if (urls.length > 0) {
                 LOADINGBAR.addTotal(this.name, urls.length);
@@ -123,19 +142,35 @@ function Calendar(href, colors) {
         }, this));
     }
 
+    this.todoLoaded = function(t){
+        t.calendar.todos[t.uid] = t;
+        //ENCRYPTBAR.incr(t.calendar.name);
+        DASHBOARD.pushTodo(t);
+    }
     this.eventLoaded = function(e){
         e.calendar.events[e.key][e.uid] = e;
         e.calendar.eventsTotallyLoaded[e.key]++;
         ENCRYPTBAR.incr(e.calendar.name);
-        if (start = e.isToday()) {
-            //console.log("TODAY : " + e.uid + " " + start);
-            DASHBOARD.pushToday(e);
-        } else if (start = e.isTomorow()) {
-            //console.log("TOMOROW : " + e.uid + " " + start);
-            DASHBOARD.pushTomorow(e);
-        }
+        DASHBOARD.pushEvent(e);
         if (e.calendar.eventsTotallyLoaded[e.key] == e.calendar.eventsCpt[e.key]) {
             refetchEvents();
+        }
+    }
+
+    this.loadTodos = function (self){
+        for (t_idx in self.todosUrls){
+            console.log("Downloading VTODO " + self.todosUrls[t_idx]);
+            $.ajax({
+                type: "GET",
+                url: self.todosUrls[t_idx],
+            }).done(function(data){
+                var t = new Todo(data, self);
+                console.log(data);
+                //LOADINGBAR.incr(self.name);
+                t.load(self.todoLoaded);
+                return data;
+            });
+
         }
     }
 
@@ -143,11 +178,11 @@ function Calendar(href, colors) {
         var key = formatDate(start);
         self.eventsLoaded[key] = 0;
         self.eventsTotallyLoaded[key] = 0;
-        for (e_idx in self.urls[key]){
-            console.log("Downloading " + self.urls[key][e_idx]);
+        for (e_idx in self.eventsUrls[key]){
+            console.log("Downloading VEVENT" + self.eventsUrls[key][e_idx]);
             $.ajax({
                 type: "GET",
-                url: self.urls[key][e_idx],
+                url: self.eventsUrls[key][e_idx],
             }).done(function(data){
                 var e = new Event(data, self, key);
                 e.calendar.eventsLoaded[e.key]++;
@@ -202,6 +237,7 @@ function Calendar(href, colors) {
         ENCRYPTBAR.end();
         ajaxPut(event.calendar.href + "/" + event.uid + ".ics", event.content, function (obj, s, r){
                 LOADINGBAR.end();
+                DASHBOARD.pushEvent(event);
                 console.log("Put success " + event.uid);
             });
     }
@@ -224,6 +260,7 @@ function Calendar(href, colors) {
                 LOADINGBAR.end();
                 console.log("Delete success " + event.uid);
                 delete event.calendar.events[event.calendar.currentDay][event.uid];
+                DASHBOARD.eventDeleteIfExist(event);
         });
     }
 }

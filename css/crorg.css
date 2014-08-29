@@ -9,6 +9,10 @@ body {
 #dashboard {
     margin-top: 5px;
 }
+#login {
+    margin-top: 5px;
+    display: none;
+}
 #note {
     display: none;
 }

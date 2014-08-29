@@ -50,6 +50,7 @@ function refresh(){
     //calendar_init();
     LOADINGBAR.resetHard();
     ENCRYPTBAR.resetHard();
+    DASHBOARD.clearAll();
     CALENDARS.load();
 }
 

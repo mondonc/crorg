@@ -64,6 +64,8 @@ function Crypter(password) {
             if (! err) {
                 event.d.VCALENDAR.VEVENT.SUMMARY = buff.toString();
 
+                // TODO VTODO
+                //
                 triplesec.decrypt ({
 
                     data: new triplesec.Buffer(event.d.VCALENDAR.VEVENT.DESCRIPTION, "hex"),

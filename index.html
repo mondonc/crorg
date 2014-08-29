@@ -56,16 +56,36 @@
     </nav>
     <!--<div class="container">-->
 
+      <div id="login">
+        <div class="row">
+          <div class="col-sm-offset-4 col-md-4">
+            <form class="well" role="form">
+              <div class="form-group">
+                <label for="eventFormSummary">Password</label>
+                <input type="text" class="form-control" id="eventFormSummary" placeholder="Encryption Password">
+              </div>
+              <span><button id="login" type="button" class="btn btn-primary" onclick="login();">Go !</button></span>
+            </form>
+          </div>
+        </div>
+      </div>
       <div id="dashboard">
         <div class="row">
           <div class="col-md-4">
             <h2><span class="glyphicon glyphicon-calendar"></span> Events</h2>
+          </div>
+          <div class="col-md-8">
+            <h2><span class="glyphicon glyphicon-tasks"></span> Tasks</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h2 class="panel-title"><span class="glyphicon glyphicon-play"></span> Today</h3>
               </div>
  
-              <h4 id="dashboard_today_msg">Nothing to do, yeah !</h4>
+              <h4 id="dashboard_today_msg"> Enjoy life and be happy !</h4>
               <table class="table table-hover" id="dashboard_today">
               </table>
             </div>
@@ -74,47 +94,47 @@
                 <h2 class="panel-title"><span class="glyphicon glyphicon-forward"></span> Tomorow</h3>
               </div>
  
-              <h4 id="dashboard_tomorow_msg">Nothing to do, yeah !</h4>
+              <h4 id="dashboard_tomorow_msg"> Enjoy life and be happy !</h4>
               <table class="table" id="dashboard_tomorow">
               </table>
             </div>
           </div>
           <div class="col-md-4">
-            <h2><span class="glyphicon glyphicon-tasks"></span> Tasks</h2>
             <div class="panel panel-danger">
               <div class="panel-heading">
-                <h3 class="panel-title"><span class="glyphicon glyphicon-exclamation-sign"></span> Urgent</h3>
+                <h3 class="panel-title"><span class="glyphicon glyphicon-heart"></span> Familly</h3>
               </div>
-              <div class="panel-body">
-                Panel content
-              </div>
+              <h4 id="dashboard_todo_Familly_msg">Nothing to do, yeah !</h4>
+              <table class="table table-hover" id="dashboard_todo_Familly">
+              </table>
             </div>
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                <h3 class="panel-title"><span class="glyphicon glyphicon-user"></span> Personal</h3>
+              </div>
+              <h4 id="dashboard_todo_Personal_msg">Nothing to do, yeah !</h4>
+              <table class="table table-hover" id="dashboard_todo_Personal">
+              </table>
+            </div>
+          </div>
+
+          <div class="col-md-4">
             <div class="panel panel-warning">
               <div class="panel-heading">
-                <h3 class="panel-title"><span class="glyphicon glyphicon-warning-sign"></span> Important</h3>
+                <h3 class="panel-title"><span class="glyphicon glyphicon-euro"></span> Work</h3>
               </div>
-              <div class="panel-body">
-                Panel content
-              </div>
+              <h4 id="dashboard_todo_Work_msg">Nothing to do, yeah !</h4>
+              <table class="table table-hover" id="dashboard_todo_Work">
+              </table>
             </div>
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> Others</h3>
+                <h3 class="panel-title"><span class="glyphicon glyphicon-th-list"></span> Other</h3>
               </div>
-              <div class="panel-body">
-                Panel content
-              </div>
+              <h4 id="dashboard_todo_Other_msg">Nothing to do, yeah !</h4>
+              <table class="table table-hover" id="dashboard_todo_Other">
+              </table>
             </div>
-          </div>
-          <div class="col-md-4">
-            <h2><span class="glyphicon glyphicon-pencil"></span> Last notes</h2>
-            <ul class="list-group">
-              <li class="list-group-item">Cras justo odio<br/>Toto</li>
-              <li class="list-group-item">Dapibus ac facilisis in</li>
-              <li class="list-group-item">Morbi leo risus</li>
-              <li class="list-group-item">Porta ac consectetur ac</li>
-              <li class="list-group-item">Vestibulum at eros</li>
-            </ul>
           </div>
         </div>
       </div>
@@ -296,6 +316,7 @@
     <script src='js/fullcalendar.js'></script>
     <script src='js/Calendars.js'></script>
     <script src='js/Event.js'></script>
+    <script src='js/Todo.js'></script>
     <script src='js/caldav.js'></script>
     <script src='js/triplesec-3.0.0-min.js'></script>
     <script src='js/Crypter.js'></script>
