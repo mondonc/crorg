@@ -46,13 +46,14 @@ function Calendars() {
                 ENCRYPTBAR.registre(this.calendars[href_idx].name);
                 addEventSource(this.calendars[href_idx].getEventSource());
             }
-            CALENDARS.loadAllCalendars(first_day);
+            CALENDARS.loadAllCalendars();
         }, this));
     }
 
-    this.loadAllCalendars = function (day) {
+    this.loadAllCalendars = function () {
         for (href_idx in CALENDARS.calendars) {
-            CALENDARS.calendars[href_idx].load(day);
+            CALENDARS.calendars[href_idx].load(today, oneday="today", notalone=false);
+            CALENDARS.calendars[href_idx].load(tomorow, oneday="tomorow", notalone=false);
             CALENDARS.calendars[href_idx].loadTodosList();
         }
     }
@@ -88,15 +89,15 @@ function Calendar(href, colors) {
     else
         this.name = parts[parts.length - 2];
 
-    this.load = function (day){
+    this.load = function (day, oneday, notalone){
         var key = formatDate(day);
-        if (!this.events.hasOwnProperty(key))
-            this.loadEventList(day);
+        //if (!this.events.hasOwnProperty(key))
+        this.loadEventList(day, oneday=oneday, notalone=notalone);
     }
 
     this.loadTodosList = function (){
         getTodosList(this.href, $.proxy(function (obj, status, r) {
-            console.log(r.responseXML);
+            //console.log(r.responseXML);
             var urls = [];
             $(r.responseXML).find('href').each(function(index, element){
                 el = $(element).text();
@@ -110,10 +111,16 @@ function Calendar(href, colors) {
         }, this));
     }
 
-    this.loadEventList = function (start, notalone){
-        var stop = moment(start).add('days', 7);
-        var key = formatDate(start);
-        console.log("Loading event list " + this.href + " for " + start.format("YYYY/MM/DD") + " (" + key + ")");
+    this.loadEventList = function (start, oneday, notalone){
+        if (oneday) {
+            var stop = moment(start).add('days', 1);
+            console.log(stop);
+            var key = oneday;
+        } else {
+            var stop = moment(start).add('days', 7);
+            var key = formatDate(start);
+        }
+        console.log("Loading event list " + this.href + " for " + start.format("YYYY/MM/DD") + " (" + key + ") to " + stop.format("YYYY/MM/DD"));
         if (! notalone ) {
             LOADINGBAR.reset();
             ENCRYPTBAR.reset();
@@ -122,6 +129,7 @@ function Calendar(href, colors) {
         this.eventsCpt[key] = 0;
         getEventsList(this.href, start, stop, $.proxy(function (obj, status, r) {
             var urls = [];
+            console.log(r.responseXML);
             $(r.responseXML).find('href').each(function(index, element){
                 el = $(element).text();
                 if (el.endsWith(".ics")) {
@@ -138,7 +146,7 @@ function Calendar(href, colors) {
                 ENCRYPTBAR.empty();
             }
             this.events[key] = {};
-            this.loadEvents(this, start);
+            this.loadEvents(this, key);
         }, this));
     }
 
@@ -165,7 +173,7 @@ function Calendar(href, colors) {
                 url: self.todosUrls[t_idx],
             }).done(function(data){
                 var t = new Todo(data, self);
-                console.log(data);
+                //console.log(data);
                 //LOADINGBAR.incr(self.name);
                 t.load(self.todoLoaded);
                 return data;
@@ -174,8 +182,7 @@ function Calendar(href, colors) {
         }
     }
 
-    this.loadEvents = function (self, start){
-        var key = formatDate(start);
+    this.loadEvents = function (self, key){
         self.eventsLoaded[key] = 0;
         self.eventsTotallyLoaded[key] = 0;
         for (e_idx in self.eventsUrls[key]){
@@ -215,7 +222,7 @@ function Calendar(href, colors) {
             }
             callback(fclist);
         } else {
-            this.loadEventList(start);
+            this.loadEventList(start, oneday=false, notalone=false);
         }
     }
 

@@ -35,13 +35,13 @@ function Dashboard() {
     }
 
     this.eventDeleteIfExist = function (event) {
-        var idx = $.inArray(event, this.todayEvents);
+        var idx = eventInList(event, this.todayEvents);
         if (idx >= 0) {
             console.log("Found !!");
             this.todayEvents.splice(idx, 1);
             this.refreshToday();
         }
-        var idx = $.inArray(event, this.tomorowEvents);
+        var idx = eventInList(event, this.tomorowEvents);
         if (idx >= 0) {
             console.log("Found !!");
             this.tomorowEvents.splice(idx, 1);

@@ -7,6 +7,7 @@ function calendar_init() {
             right: '',
         },
 
+        lang: 'fr',
         editable: true,
         droppable: true, // this allows things to be dropped onto the calendar !!!
         selectable: true,
