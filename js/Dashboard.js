@@ -28,7 +28,8 @@ function Dashboard() {
         if (event.isToday()) {
             this._push(this.todayEvents, event);
             this.refreshToday();
-        } else if (event.isTomorow()) {
+        }
+        if (event.isTomorow()) {
             this._push(this.tomorowEvents, event);
             this.refreshTomorow();
         }
@@ -37,13 +38,11 @@ function Dashboard() {
     this.eventDeleteIfExist = function (event) {
         var idx = eventInList(event, this.todayEvents);
         if (idx >= 0) {
-            console.log("Found !!");
             this.todayEvents.splice(idx, 1);
             this.refreshToday();
         }
         var idx = eventInList(event, this.tomorowEvents);
         if (idx >= 0) {
-            console.log("Found !!");
             this.tomorowEvents.splice(idx, 1);
             this.refreshTomorow();
         }
@@ -134,7 +133,7 @@ function Dashboard() {
         }
     }
 
-    this._refresh = function (el, m, l) {
+    this._refresh = function (el, m, l, reference) {
 
         el.innerHTML = "";
         m.innerHTML = "";
@@ -143,18 +142,18 @@ function Dashboard() {
             m.innerHTML = "Nothing to do, yeah !";
         } else {
             for (i in l) {
-                el.innerHTML += l[i].getTableLine();
+                el.innerHTML += l[i].getTableLine(reference);
             }
         }
 
     }
 
     this.refreshToday = function () {
-        this._refresh(this.todayEl, this.todayMsg, this.todayEvents);
+        this._refresh(this.todayEl, this.todayMsg, this.todayEvents, today);
     }
 
     this.refreshTomorow = function () {
-        this._refresh(this.tomorowEl, this.tomorowMsg, this.tomorowEvents);
+        this._refresh(this.tomorowEl, this.tomorowMsg, this.tomorowEvents, tomorow);
     }
 
     this.clearAll = function () {

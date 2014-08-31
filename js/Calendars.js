@@ -114,7 +114,6 @@ function Calendar(href, colors) {
     this.loadEventList = function (start, oneday, notalone){
         if (oneday) {
             var stop = moment(start).add('days', 1);
-            console.log(stop);
             var key = oneday;
         } else {
             var stop = moment(start).add('days', 7);
@@ -129,7 +128,7 @@ function Calendar(href, colors) {
         this.eventsCpt[key] = 0;
         getEventsList(this.href, start, stop, $.proxy(function (obj, status, r) {
             var urls = [];
-            console.log(r.responseXML);
+            //console.log(r.responseXML);
             $(r.responseXML).find('href').each(function(index, element){
                 el = $(element).text();
                 if (el.endsWith(".ics")) {

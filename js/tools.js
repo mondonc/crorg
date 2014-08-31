@@ -69,7 +69,7 @@ function addEventSource(es){
     try {
         $('#calendar').fullCalendar('addEventSource', es);
     } catch (err) {
-        console.log("NOP");
+        console.log("Ignoring fullcalendar warning");
     }
 }
 
@@ -77,7 +77,7 @@ function refetchEvents(){
     try {
         $('#calendar').fullCalendar('refetchEvents');
     } catch (err) {
-        console.log("NOP");
+        console.log("Ignoring fullcalendar warning");
     }
 }
 
@@ -109,10 +109,8 @@ function formatDate(ds) {
 function eventInList(e, l) {
     for (i in l) {
         if (l[i].uid == e.uid) {
-            console.log("found");
             return i;
         }
     }
-    console.log("Not found");
     return -1;
 }

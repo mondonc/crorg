@@ -54,7 +54,7 @@ function LoadingBar(el){
     }
 
     this.end = function() {
-            console.log(this.lb.selector + " :  END !");
+            //console.log(this.lb.selector + " :  END !");
             this.set(100);
             this.lb.attr('class', 'progress-bar progress-bar-success');
     }

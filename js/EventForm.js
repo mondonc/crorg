@@ -117,6 +117,7 @@ function EventForm(){
         }
 
         e.d["VCALENDAR"]["VEVENT"]["SUMMARY"] = EVENTFORM.summary.val();
+        console.log("Lu depuis le FORM : " + EVENTFORM.summary.val());
         e.d["VCALENDAR"]["VEVENT"]["DESCRIPTION"] = EVENTFORM.description.val();
         e.d["VCALENDAR"]["VEVENT"]["LOCATION"] = EVENTFORM.location.val();
 

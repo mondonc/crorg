@@ -53,13 +53,12 @@ console.log();
 //    }
 //});
 moment.locale('fr');
-var today = moment().utc();
-today.utc().millisecond(0);
-today.utc().second(0);
-today.utc().minute(0);
-today.utc().hour(0);
-var tomorow = moment(today).utc().add(1, 'day');
+//var today = moment().startOf('day');
+var today = moment.utc(moment().format('YYYY-MM-DD')).startOf('day');
+var tomorow = moment(today).add(1, 'day');
 var first_day = moment(today).day(1);
+//console.log(today);
+//console.log(tomorow);
 
 function refetchIfneeded(){
     //if (ICScpt != ICScpt_last && ICScpt == ICSloaded){
