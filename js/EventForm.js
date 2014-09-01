@@ -122,22 +122,31 @@ function EventForm(){
         }
 
         e.d["VCALENDAR"]["VEVENT"]["SUMMARY"] = EVENTFORM.summary.val();
-        console.log("Lu depuis le FORM : " + EVENTFORM.summary.val());
         e.d["VCALENDAR"]["VEVENT"]["DESCRIPTION"] = EVENTFORM.description.val();
         e.d["VCALENDAR"]["VEVENT"]["LOCATION"] = EVENTFORM.location.val();
 
-        var startdate = new moment(EVENTFORM.start.val(), EVENTFORM.dateFormat);
-        startdate.hours(EVENTFORM.startHour.val());
-        startdate.minutes(EVENTFORM.startMinute.val());
+        if (allday) {
+            var startdate = new moment.utc(EVENTFORM.start.val(), EVENTFORM.dateFormat);
+        } else {
+            var startdate = new moment(EVENTFORM.start.val(), EVENTFORM.dateFormat);
+            startdate.hours(EVENTFORM.startHour.val());
+            startdate.minutes(EVENTFORM.startMinute.val());
+        }
 
         if (EVENTFORM.end.val() == "NOEND") {
             var enddate = null;
         } else {
-            var enddate = new moment(EVENTFORM.end.val(), EVENTFORM.dateFormat);
-            enddate.hours(EVENTFORM.endHour.val());
-            enddate.minutes(EVENTFORM.endMinute.val());
+            if (allday) {
+                var enddate = new moment.utc(EVENTFORM.end.val(), EVENTFORM.dateFormat);
+            } else {
+                var enddate = new moment(EVENTFORM.end.val(), EVENTFORM.dateFormat);
+                enddate.hours(EVENTFORM.endHour.val());
+                enddate.minutes(EVENTFORM.endMinute.val());
+            }
         }
 
+        console.log(startdate);
+        console.log(enddate);
         e.updateDTSTART(startdate, allday);
         e.updateDTEND(enddate, allday);
         e.encrypted = encrypt;

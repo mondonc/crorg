@@ -20,6 +20,9 @@ function Event(datas, calendar, startdate) {
     this.key = startdate;
     this.encrypted = false;
     this.datas = datas;
+    this.start = null;
+    this.end = null;
+    this.allDay = false;
 
     this.parseICS = function(parent_object, data, idx) {
 
@@ -60,6 +63,8 @@ function Event(datas, calendar, startdate) {
     this.load = function(callback) {
         this.uid = this.datas.match(/UID:(.*)/)[1];
         this.parseICS(this.d, this.datas.split("\n"), 0);
+        this.start = this.getMomentStart();
+        this.end = this.getMomentEnd();
         if (this.d.VCALENDAR.PRODID == "-//CRORG//V0.1//EN") {
             this.encrypted = true;
             ENCRYPTBAR.setTotal(this.calendar.name, ENCRYPTBAR.total[this.calendar.name]+3);
@@ -71,58 +76,31 @@ function Event(datas, calendar, startdate) {
 
     this.getFC = function() {
 
-        var e = this.d;
+        var e = this.d.VCALENDAR.VEVENT;
 
-        if (e.VCALENDAR.hasOwnProperty("VEVENT")) {
-            var FCevent = {};
-            for (prop in e.VCALENDAR.VEVENT) {
+        var FCevent = {};
 
-                if (prop.startsWith("DTSTART")) {
-                    var tz = tzidPattern.exec(prop);
-                    if (tz){
-                        var startDate = moment.tz(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm", tz[1].replace(/"/g, ''));
-                    } else {
-                        var startDate = moment.utc(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm");
-                    }
-                    FCevent["start"] = startDate.utc().format("YYYY-MM-DDTHH:mm:ss");
-                    FCevent["start"] += "Z";
-                    if (prop.endsWith("VALUE=DATE")) {
-                        FCevent["allDay"] = true;
-                        this.allDay = true;
-                    }
+        FCevent["start"] = this.start.format("YYYY-MM-DDTHH:mm:ss");
+        FCevent["start"] += "Z";
+        FCevent["allDay"] = this.allDay;
 
-                } else if (prop.startsWith("DTEND")) {
-                    var tz = tzidPattern.exec(prop);
-                    if (tz){
-                        var stopDate = moment.tz(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm", tz[1].replace(/"/g, ''));
-                    } else {
-                        var stopDate = moment.utc(e.VCALENDAR.VEVENT[prop], "YYYYMMDDTHHmm");
-                    }
-
-                    FCevent["end"] = stopDate.utc().format("YYYY-MM-DDTHH:mm:ss");
-                    FCevent["end"] += "Z";
-
-                } else if (prop.startsWith("SUMMARY")) {
-                    FCevent["title"] = e.VCALENDAR.VEVENT[prop];
-
-                } else if (prop.startsWith("DESCRIPTION")) {
-                    FCevent["description"] = e.VCALENDAR.VEVENT[prop];
-
-                } else if (prop.startsWith("LOCATION")) {
-                    FCevent["location"] = e.VCALENDAR.VEVENT[prop];
-
-                } else if (prop.startsWith("UID")) {
-                    FCevent["id"] = e.VCALENDAR.VEVENT[prop];
-                }
-            }
-            FCevent["textColor"] = this.calendar.textColor;
-            FCevent["backgroundColor"] = this.calendar.backgroundColor;
-            FCevent["borderColor"] = this.calendar.borderColor;
-            FCevent["calendar"] = this.calendar;
-            FCevent["encrypted"] = this.encrypted;
-            return FCevent;
+        if (this.end) {
+            FCevent["end"] = this.end.format("YYYY-MM-DDTHH:mm:ss");
+            FCevent["end"] += "Z";
         }
-        return null;
+
+        FCevent["title"] = e["SUMMARY"];
+        FCevent["description"] = e["DESCRIPTION"];
+        FCevent["location"] = e["LOCATION"];
+
+        FCevent["id"] = e["UID"];
+        FCevent["textColor"] = this.calendar.textColor;
+        FCevent["backgroundColor"] = this.calendar.backgroundColor;
+        FCevent["borderColor"] = this.calendar.borderColor;
+        FCevent["calendar"] = this.calendar;
+        FCevent["encrypted"] = this.encrypted;
+        //console.log(FCevent);
+        return FCevent;
     }
 
     this.getICS = function(callback) {
@@ -155,7 +133,6 @@ function Event(datas, calendar, startdate) {
                 }
             }
         }
-        console.log(result);
         return result;
     }
 
@@ -166,56 +143,45 @@ function Event(datas, calendar, startdate) {
             }
         }
         return null;
-
     }
 
-    this.updateDTSTART = function(start, allday) {
-        var prop = this.findAttrVEvent("DTSTART");
+
+    this._updateProp = function(mom, allday, name, shortname) {
+
+        var prop = this.findAttrVEvent(name);
         var tz = tzidPattern.exec(prop);
-        if (tz){
-            this.d.VCALENDAR.VEVENT[prop] = start.tz(tz[1].replace(/"/g, '')).format("YYYYMMDDTHHmmss");
-            //this.d.VCALENDAR.VEVENT[prop] += "Z";
+        delete this.d.VCALENDAR.VEVENT[prop];
+
+        if (mom == null) {
+            this.allDay = true;
             return true;
         }
+
+        this[shortname] = mom.utc();
+        console.log(mom.format());
         if (allday) {
-            delete this.d.VCALENDAR.VEVENT[prop];
-            this.d.VCALENDAR.VEVENT["DTSTART;VALUE=DATE"] = start.format("YYYYMMDD");
+            this.d.VCALENDAR.VEVENT[name + ";VALUE=DATE"] = mom.startOf("day").format("YYYYMMDD");
             this.allDay = true;
         } else {
-            delete this.d.VCALENDAR.VEVENT[prop];
-            this.d.VCALENDAR.VEVENT["DTSTART"] = start.utc().format("YYYYMMDDTHHmmss");
-            this.d.VCALENDAR.VEVENT["DTSTART"] += "Z";
             this.allDay = false;
-        }
-    }
-    this.updateDTEND = function(end, allday) {
-
-        var prop = this.findAttrVEvent("DTEND");
-
-        if (end != null) {
-            var tz = tzidPattern.exec(prop);
             if (tz){
-                this.d.VCALENDAR.VEVENT[prop] = end.tz(tz[1].replace(/"/g, '')).format("YYYYMMDDTHHmmss");
-                //this.d.VCALENDAR.VEVENT[prop] += "Z";
-                return true;
-            }
-            if (allday) {
-                delete this.d.VCALENDAR.VEVENT[prop];
-                this.d.VCALENDAR.VEVENT["DTEND;VALUE=DATE"] = end.add('day', 1).format("YYYYMMDD");
-                this.allDay = true;
+                this.d.VCALENDAR.VEVENT[prop] = mom.tz(tz[1].replace(/"/g, '')).format("YYYYMMDDTHHmmss");
             } else {
-                delete this.d.VCALENDAR.VEVENT[prop];
-                this.d.VCALENDAR.VEVENT["DTEND"] = end.utc().format("YYYYMMDDTHHmmss");
-                this.d.VCALENDAR.VEVENT["DTEND"] += "Z";
-                this.allDay = false;
+                this.d.VCALENDAR.VEVENT[name] = mom.utc().format("YYYYMMDDTHHmmss");
+                this.d.VCALENDAR.VEVENT[name] += "Z";
             }
-
-        } else {
-            delete this.d["VCALENDAR"]["VEVENT"]["DTEND"];
-            this.allDay = true;
         }
-
     }
+
+    this.updateDTSTART = function(start, allDay) {
+        this._updateProp(start, allDay, "DTSTART", "start");
+    }
+
+    this.updateDTEND = function(end, allDay) {
+        if (allDay && end != null)
+            end.add('day', 1);
+        this._updateProp(end, allDay, "DTEND", "end");
+   }
 
     this.getTableLine = function (reference) {
         var s = this.getMomentStart();
@@ -275,7 +241,11 @@ function Event(datas, calendar, startdate) {
     this.isToday = function() {
         var start = this.getMomentStart();
         var end = this.getMomentEnd();
-        if (moment.utc().range(start.startOf('day'), end.startOf('day')).contains(today)) {
+
+        if (!end && start.isSame(today, 'day'))
+            return start;
+
+        if (end && moment.utc().range(start.startOf('day'), end.startOf('day')).contains(today)) {
             return start;
         } else {
             return false;
@@ -286,7 +256,11 @@ function Event(datas, calendar, startdate) {
     this.isTomorow = function() {
         var start = this.getMomentStart();
         var end = this.getMomentEnd();
-        if (moment.utc().range(start.startOf('day'), end.subtract("s", 1).startOf('day')).contains(tomorow)) {
+
+        if (!end && start.isSame(tomorow, 'day'))
+            return start;
+
+        if (end && moment.utc().range(start.startOf('day'), end.subtract("s", 1).startOf('day')).contains(tomorow)) {
             return start;
         } else {
             return false;
