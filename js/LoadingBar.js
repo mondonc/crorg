@@ -23,7 +23,6 @@ function LoadingBar(el){
 
 
     this.registre = function(name) {
-        console.log("Registre" + name);
         this.total[name] = 0;
         this.cpt[name] = 0;
         this.len += 1;

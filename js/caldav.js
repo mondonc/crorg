@@ -33,7 +33,6 @@ function getEventsList(url, start, stop, callback) {
 }
 
 function getTodosList(url, callback) {
-    console.log("Getting todolist");
     var params = {
         contentType: 'text/xml',
         data: '<?xml version="1.0" encoding="utf-8" ?>' + '\n' +

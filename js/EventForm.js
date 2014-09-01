@@ -32,11 +32,23 @@ function EventForm(){
 
     this.show = function(event, showModal){
 
+        var allDay = false;
         this.start.val(event.start.format(this.dateFormat));
         this.startHour.val(event.start.format("HH"));
         this.startMinute.val(event.start.format("mm"));
 
+        // If allday event
+        if (!event.start.hasTime()){
+            this.allday.prop("checked", true);
+            allDay = true;
+        } else {
+            this.allday.prop("checked", false);
+            allDay = false;
+        }
+
         if (event.hasOwnProperty("end") && event.end != null) {
+            if (allDay)
+                event.end.subtract('day', 1);
             this.end.val(event.end.format(this.dateFormat));
             this.endHour.val(event.end.format("HH"));
             this.endMinute.val(event.end.format("mm"));
@@ -44,13 +56,6 @@ function EventForm(){
             this.end.val("NOEND");
             this.endHour.val("NOEND");
             this.endMinute.val("NOEND");
-        }
-
-        // If allday event
-        if (!event.start.hasTime()){
-            this.allday.prop("checked", true);
-        } else {
-            this.allday.prop("checked", false);
         }
 
         this.calendars.find('option').remove();

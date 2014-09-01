@@ -42,6 +42,7 @@ var localOffset = new Date().getTimezoneOffset();
 //var tzidPattern = /(?<=TZID=)[^:]+/;
 //var tzidPattern = /TZID=/;
 var tzidPattern = /TZID=([^:]+)/;
+var allDayPattern = /VALUE=DATE/;
 
 function parseDate( key, str) {
     var year = parseInt( str.substring(0,4), 10);
@@ -65,7 +66,6 @@ function parseDate( key, str) {
 }
 
 function addEventSource(es){
-    console.log("Adding eventSource");
     try {
         $('#calendar').fullCalendar('addEventSource', es);
     } catch (err) {

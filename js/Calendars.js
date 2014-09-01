@@ -96,6 +96,7 @@ function Calendar(href, colors) {
     }
 
     this.loadTodosList = function (){
+        console.log("Loading todos list " + this.href);
         getTodosList(this.href, $.proxy(function (obj, status, r) {
             //console.log(r.responseXML);
             var urls = [];
