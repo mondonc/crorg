@@ -158,7 +158,6 @@ function Event(datas, calendar, startdate) {
         }
 
         this[shortname] = mom.utc();
-        console.log(mom.format());
         if (allday) {
             this.d.VCALENDAR.VEVENT[name + ";VALUE=DATE"] = mom.startOf("day").format("YYYYMMDD");
             this.allDay = true;

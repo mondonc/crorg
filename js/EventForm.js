@@ -133,11 +133,15 @@ function EventForm(){
             startdate.minutes(EVENTFORM.startMinute.val());
         }
 
-        if (EVENTFORM.end.val() == "NOEND") {
-            var enddate = null;
-        } else {
-            if (allday) {
+        if (allday) {
+            if (EVENTFORM.end.val() == "NOEND") {
+                var enddate = new moment.utc(EVENTFORM.start.val(), EVENTFORM.dateFormat);
+            } else {
                 var enddate = new moment.utc(EVENTFORM.end.val(), EVENTFORM.dateFormat);
+            }
+        } else {
+            if (EVENTFORM.end.val() == "NOEND") {
+                var enddate = moment(startdate).add("hours", 2);
             } else {
                 var enddate = new moment(EVENTFORM.end.val(), EVENTFORM.dateFormat);
                 enddate.hours(EVENTFORM.endHour.val());
