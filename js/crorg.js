@@ -1,5 +1,6 @@
 var CALENDARS = new Calendars();
 var EVENTFORM = new EventForm();
+var TODOFORM = new TodoForm();
 var DELFORM = new DelForm();
 var LOADINGBAR = new LoadingBar('#loading-bar');
 var ENCRYPTBAR = new LoadingBar('#encrypt-bar');

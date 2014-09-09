@@ -59,6 +59,8 @@ function Dashboard() {
 
     this.pushTodo = function (todo) {
         this.todoDeleteIfExist(todo);
+        if (todo.d.VCALENDAR.VTODO.CATEGORIES == undefined) todo.d.VCALENDAR.VTODO.CATEGORIES = "Other";
+
         var categories = todo.d.VCALENDAR.VTODO.CATEGORIES;
         if (!this.todos.hasOwnProperty(categories)) {
             this.todos[categories] = [];
@@ -99,9 +101,24 @@ function Dashboard() {
                 begin = 1;
             }
 
+            var options = "";
+            $.each(CALENDARS.calendars, function (i, cal) {
+               options += '<option value="' + cal.name + '">' + cal.name + '</option>';
+            });
+
+            var input_group = '<span class="input-group pull-right col-md-8">' +
+                '<input id="newtodo_' + cat + '" type="text" class="form-control" placeholder="New"/>' +
+                '<span class="input-group-btn">' +
+                ' <button class="btn btn-default" type="button" onclick="newTodo(\'' + cat + '\', false)">' +
+                '<span class="glyphicon glyphicon-floppy-saved"></span>' +
+                '</button> ' +
+                '<button class="btn btn-default" onclick="newTodo(\'' + cat + '\', true)"><span class="glyphicon glyphicon-lock"></span></button>' +
+                '</span>' +
+                '</span> ';
             var content = '<div id="todo_' + cat + '" class="panel panel-' + todo_class + '">' +
               '<div class="panel-heading">' +
-                '<h3 class="panel-title"><span class="glyphicon glyphicon-' + todo_icon + '"></span> ' + cat + '</h3>' +
+                '<span class="panel-title"><span class="pull-left"><span class="glyphicon glyphicon-' + todo_icon + '"></span> ' + cat + '</span>' + input_group +
+                '<span class="clearfix">' +
               '</div>' +
               '<table class="table table-hover" id="todo_' + cat + '_table">' +
               '</table>' +

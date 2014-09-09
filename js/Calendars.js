@@ -60,7 +60,8 @@ function Calendars() {
 
     this.find = function(name){
         for (href_idx in this.calendars) {
-            if (this.calendars[href_idx].name == name)
+            console.log(this.calendars[href_idx].name);
+            if (this.calendars[href_idx].name.toUpperCase() == name.toUpperCase())
                 return this.calendars[href_idx];
         }
         return null;
@@ -249,6 +250,13 @@ function Calendar(href, colors) {
             });
     }
 
+    this.todoPuted = function(todo) {
+        ajaxPut(todo.calendar.href + "/" + todo.uid + ".ics", todo.content, function (obj, s, r){
+                DASHBOARD.pushTodo(todo);
+                console.log("Put success " + todo.uid);
+            });
+    }
+
     this.putEvent = function(event) {
         LOADINGBAR.reset();
         ENCRYPTBAR.reset();
@@ -258,6 +266,15 @@ function Calendar(href, colors) {
         event.calendar.events[event.calendar.currentDay][event.uid] = event;
         event.getICS(this.eventPuted);
     }
+
+    this.putTodo = function(todo) {
+        if (todo.encrypted) {
+            ENCRYPTBAR.setTotal(todo.calendar.name, 3);
+        }
+        todo.calendar.todos[todo.uid] = todo;
+        todo.getICS(this.todoPuted);
+    }
+
 
 
 

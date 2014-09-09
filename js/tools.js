@@ -114,3 +114,22 @@ function eventInList(e, l) {
     }
     return -1;
 }
+
+function newTodo(cat, encrypted) {
+    console.log("New Todo in " + cat);
+    var sum = document.getElementById("newtodo_" + cat).value;
+    var calendar = CALENDARS.find(cat);
+    if (calendar === null){
+        calendar = CALENDARS.calendars[0];
+    }
+    var t = new Todo(TODO_TEMPLATE, calendar);
+    t.uid = guid();
+    t.parseICS(t.d, t.datas.split("\n"), 0);
+    t.d["VCALENDAR"]["VTODO"]["UID"] = t.uid;
+    t.d["VCALENDAR"]["VTODO"]["SUMMARY"] = sum;
+    t.d["VCALENDAR"]["VTODO"]["CATEGORIES"] = cat;
+    t.encrypted = encrypted;
+    calendar.putTodo(t);
+
+    //TODOFORM.show({summary: sum}, true);
+}

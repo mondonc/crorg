@@ -1,14 +1,14 @@
-TODO_TEMPLATE = "BEGIN:VCALENDAR\n\
+TODO_TEMPLATE =
+"BEGIN:VCALENDAR\n\
 PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN\n\
 VERSION:2.0\n\
-BEGIN:VEVENT\n\
-UID:8c122d5a-ab1e-410d-a0cc-56166b440001\n\
-SUMMARY:New Event\n\
-DTSTART:20140721T150000\n\
-DTEND:20140721T160000\n\
-LOCATION:ici\n\
-DESCRIPTION:description\n\
-END:VEVENT\n\
+BEGIN:VTODO\n\
+UID:25b8647c-e5c6-4bbd-9726-c9e235a2fc23\n\
+SUMMARY:ssddssd\n\
+STATUS:CANCELLED\n\
+CATEGORIES:Work\n\
+PERCENT-COMPLETE:0\n\
+END:VTODO\n\
 END:VCALENDAR\n\
 ";
 
@@ -58,6 +58,7 @@ function Todo(datas, calendar) {
 
     this.load = function(callback) {
         this.uid = this.datas.match(/UID:(.*)/)[1];
+        console.log(this.datas);
         this.parseICS(this.d, this.datas.split("\n"), 0);
         if (this.d.VCALENDAR.PRODID == "-//CRORG//V0.1//EN") {
             this.encrypted = true;
@@ -113,7 +114,18 @@ function Todo(datas, calendar) {
 
     this.getTableLine = function () {
         var per = this.d.VCALENDAR.VTODO["PERCENT-COMPLETE"];
+        var loc = this.d.VCALENDAR.VTODO["LOCATION"];
+        var begin_icon = "remove-sign";
+        switch (this.d.VCALENDAR.VTODO["STATUS"]) {
+            case "COMPLETED":
+                begin_icon = "ok-sign";
+                break;
+            case "CANCELLED":
+                begin_icon = "minus-sign";
+                break;
+        }
         if (!per) per = 0;
-        return "<tr><td><b>" + this.d.VCALENDAR.VTODO.SUMMARY + "</b></td><td><i>" + this.d.VCALENDAR.VTODO.STATUS + "</i></td><td>(" + per + "%)</td></tr>";
+        if (!loc) loc = "";
+        return '<tr><td class="col-md-1"><span class="glyphicon glyphicon-' + begin_icon + '"></span></td><td class="col-md-4"><b>' + this.d.VCALENDAR.VTODO.SUMMARY + '</b></td><td class="col-md-4"><i>' + loc + '</i></td><td class="col-md-1"><span class="badge badge-default">' + per + '%</span></td></tr>';
     }
 }
