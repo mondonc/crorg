@@ -63,7 +63,7 @@ function Todo(datas, calendar) {
         if (this.d.VCALENDAR.PRODID == "-//CRORG//V0.1//EN") {
             this.encrypted = true;
             //ENCRYPTBAR.setTotal(this.calendar.name, ENCRYPTBAR.total[this.calendar.name]+3);
-            CRYPTER.decrypt(this, callback);
+            CRYPTER.decrypt(this, callback, "VTODO");
         } else {
             callback(this);
         }
@@ -71,7 +71,7 @@ function Todo(datas, calendar) {
 
     this.getICS = function(callback) {
         if (this.encrypted) {
-            CRYPTER.encrypt(this, callback);
+            CRYPTER.encrypt(this, callback, "VTODO");
         } else {
             this.content = this._getICS(this.d);
             callback(this);
