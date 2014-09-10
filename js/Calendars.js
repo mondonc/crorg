@@ -40,11 +40,15 @@ function Calendars() {
                 }
             });
             this.calendarList = calendarList;
+            var nbCal = 0;
             for (href_idx in this.calendarList) {
-                this.calendars[href_idx] = new Calendar(this.calendarList[href_idx], COLORS[href_idx]);
-                LOADINGBAR.registre(this.calendars[href_idx].name);
-                ENCRYPTBAR.registre(this.calendars[href_idx].name);
-                addEventSource(this.calendars[href_idx].getEventSource());
+                if (this.calendarList[href_idx].indexOf("contact_birthdays") == -1) {
+                    this.calendars[nbCal] = new Calendar(this.calendarList[href_idx], COLORS[nbCal]);
+                    LOADINGBAR.registre(this.calendars[nbCal].name);
+                    ENCRYPTBAR.registre(this.calendars[nbCal].name);
+                    addEventSource(this.calendars[nbCal].getEventSource());
+                    nbCal++;
+                }
             }
             CALENDARS.loadAllCalendars();
         }, this));
