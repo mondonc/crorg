@@ -1,8 +1,13 @@
 
+
 function Dashboard() {
 
     this.todayEvents = [];
-    this.todos = {};
+    this.todos = {
+        'Work' : [],
+        'Familly' : [],
+        'Personal' : [],
+    };
     this.tomorowEvents = [];
     this.todayEl = document.getElementById("dashboard_today");
     this.tomorowEl = document.getElementById("dashboard_tomorow");
@@ -17,9 +22,15 @@ function Dashboard() {
         l.push(e);
     }
 
-    this._sort = function (l) {
+    this._sort_event = function (l) {
         l.sort(function(a, b) {
             return a.getMomentStart() - b.getMomentStart();
+        })
+    }
+
+    this._sort_todo = function (l) {
+        l.sort(function(a, b) {
+            return parseInt(a.d.VCALENDAR.VTODO["PERCENT-COMPLETE"], 10) - parseInt(b.d.VCALENDAR.VTODO["PERCENT-COMPLETE"], 10);
         })
     }
 
@@ -106,20 +117,23 @@ function Dashboard() {
                options += '<option value="' + cal.name + '">' + cal.name + '</option>';
             });
 
-            var input_group = '<span class="input-group pull-right col-md-8">' +
-                '<input id="newtodo_' + cat + '" type="text" class="form-control" placeholder="New"/>' +
-                '<span class="input-group-btn">' +
-                ' <button class="btn btn-default" type="button" onclick="newTodo(\'' + cat + '\', false)">' +
-                '<span class="glyphicon glyphicon-floppy-saved"></span>' +
-                '</button> ' +
-                '<button class="btn btn-default" onclick="newTodo(\'' + cat + '\', true)"><span class="glyphicon glyphicon-lock"></span></button>' +
-                '</span>' +
-                '</span> ';
+            var input_group = '<form class="form-inline" role="form">' +
+                ' <label id="newtodo_form_encrypted_label" class="pull-right "> <input id="newtodo_form_encrypted" class="pull-right" type="checkbox"/> <span class="glyphicon glyphicon-lock"></span></label>' +
+                '<span class="input-group pull-right col-md-7">' +
+                    '<input id="newtodo_' + cat + '" type="text" class="form-control" placeholder="New" onkeyup="newTodoEvent(event)" />' +
+                    '<span class="input-group-btn">' +
+                        ' <button class="btn btn-default" type="button" onclick="newTodo(\'' + cat + '\')">' +
+                            '<span class="glyphicon glyphicon-floppy-saved"></span>' +
+                        '</button> ' +
+                    '</span> ' +
+                '</span> ' +
+                '</form>';
             var content = '<div id="todo_' + cat + '" class="panel panel-' + todo_class + '">' +
               '<div class="panel-heading">' +
                 '<span class="panel-title"><span class="pull-left"><span class="glyphicon glyphicon-' + todo_icon + '"></span> ' + cat + '</span>' + input_group +
                 '<span class="clearfix">' +
               '</div>' +
+              '<span class="" id="todo_' + cat + '_msg"></span>' +
               '<table class="table table-hover" id="todo_' + cat + '_table">' +
               '</table>' +
             '</div>'
@@ -138,11 +152,22 @@ function Dashboard() {
                 var key = "todos_" + cpt%2;
                 document.getElementById(key).innerHTML += content;
             }
-                cpt++;
 
-            for (todo in this.todos[cat]) {
-                document.getElementById("todo_" + cat + "_table").innerHTML += this.todos[cat][todo].getTableLine();
-            }
+//            console.log("Installing keyup for " + cat);
+//            console.log('#newtodo_' + cat);
+//            $('#newtodo_' + cat).on('keyup', function(e) {
+//                console.log("Key pressed " + cat);
+//                if (e.which == 13) {
+//                    newTodo(e.target.id.replace("newtodo_", ""));
+//                    e.preventDefault();
+//                }
+//            });
+            cpt++;
+
+            //for (todo in this.todos[cat]) {
+                //document.getElementById("todo_" + cat + "_table").innerHTML += this.todos[cat][todo].getTableLine();
+            this._refresh(document.getElementById("todo_" + cat + "_table"), document.getElementById("todo_" + cat + "_msg"), this.todos[cat], null, this._sort_todo);
+            //}
             //if (this.todos[cat].length == 0) {
             //    KNOWN_TODO[cat]["msg"].innerHTML = "Nothing to do, yeah !";
             //} else {
@@ -150,11 +175,11 @@ function Dashboard() {
         }
     }
 
-    this._refresh = function (el, m, l, reference) {
+    this._refresh = function (el, m, l, reference, sort_fct) {
 
         el.innerHTML = "";
         m.innerHTML = "";
-        this._sort(l);
+        sort_fct(l);
         if (l.length == 0) {
             m.innerHTML = "Nothing to do, yeah !";
         } else {
@@ -166,11 +191,11 @@ function Dashboard() {
     }
 
     this.refreshToday = function () {
-        this._refresh(this.todayEl, this.todayMsg, this.todayEvents, today);
+        this._refresh(this.todayEl, this.todayMsg, this.todayEvents, today, this._sort_event);
     }
 
     this.refreshTomorow = function () {
-        this._refresh(this.tomorowEl, this.tomorowMsg, this.tomorowEvents, tomorow);
+        this._refresh(this.tomorowEl, this.tomorowMsg, this.tomorowEvents, tomorow, this._sort_event);
     }
 
     this.clearAll = function () {

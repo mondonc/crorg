@@ -10,7 +10,7 @@ function TodoForm(){
     this.uid = "";
     this.parentCalendar = null;
 
-    this.show = function(todo, showModal){
+    this.show = function(todo_uid, showModal){
 
         this.calendars.find('option').remove();
         $.each(CALENDARS.calendars, function (i, cal) {
@@ -29,25 +29,25 @@ function TodoForm(){
                    id: "checkbox_" + i,
                    value : i,
                }));
-           TODOFORM.categories.append(
-               '<label for="checkbox' + i + '" >' + i + ' </label> ');
+           TODOFORM.categories.append('<label for="checkbox' + i + '" >' + i + ' </label> ');
         });
 
         // New todo
-        if (!todo.hasOwnProperty("uid")){
+        todo = CALENDARS.getTodo(todo_uid);
+        if (todo == null){
 
             this.title.innerHTML = "Add new todo";
             this.uid = "";
-            this.summary.val(todo.summary);
-            this.location.val("");
+            this.summary.val("");
+            this.encrypt.prop("checked", true);
+            DELFORM.hideButton();
 
         // Existing todo
         } else {
 
             this.title.innerHTML = "Update todo";
             this.uid = todo.uid;
-            this.summary.val(todo.title);
-            this.location.val(todo.location);
+            this.summary.val(todo.d.VCALENDAR.VTODO.SUMMARY);
             this.parentCalendar = todo.calendar;
             this.calendars.val(todo.calendar.name);
             if (todo.encrypted) {
@@ -55,6 +55,7 @@ function TodoForm(){
             } else {
                 this.encrypt.prop("checked", false);
             }
+            DELFORM.init(todo, todo.d.VCALENDAR.VTODO.SUMMARY);
         }
 
         //this.button.click(this.getValues);
@@ -69,11 +70,11 @@ function TodoForm(){
         var encrypt = TODOFORM.encrypt.prop("checked");
 
         if (TODOFORM.uid){
-            var e = this.parentCalendar.gettodo(TODOFORM.uid);
+            var t = this.parentCalendar.getTodo(TODOFORM.uid);
             $("#calendar").fullCalendar( 'removetodos', TODOFORM.uid)
             if (this.parentCalendar != cal) {
-                this.parentCalendar.deltodo(e);
-                e.calendar = cal;
+                this.parentCalendar.delTodo(t);
+                t.calendar = cal;
             }
 
         // New todo
@@ -85,7 +86,6 @@ function TodoForm(){
         }
 
         t.d["VCALENDAR"]["VTODO"]["SUMMARY"] = TODOFORM.summary.val();
-        t.d["VCALENDAR"]["VTODO"]["LOCATION"] = TODOFORM.location.val();
         t.encrypted = encrypt;
 
         cal.putTodo(t);

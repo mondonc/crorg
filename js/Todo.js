@@ -6,7 +6,7 @@ BEGIN:VTODO\n\
 UID:25b8647c-e5c6-4bbd-9726-c9e235a2fc23\n\
 SUMMARY:ssddssd\n\
 STATUS:CANCELLED\n\
-CATEGORIES:Work\n\
+CATEGORIES:Other\n\
 PERCENT-COMPLETE:0\n\
 END:VTODO\n\
 END:VCALENDAR\n\
@@ -58,7 +58,7 @@ function Todo(datas, calendar) {
 
     this.load = function(callback) {
         this.uid = this.datas.match(/UID:(.*)/)[1];
-        console.log(this.datas);
+        //console.log(this.datas);
         this.parseICS(this.d, this.datas.split("\n"), 0);
         if (this.d.VCALENDAR.PRODID == "-//CRORG//V0.1//EN") {
             this.encrypted = true;
@@ -126,6 +126,6 @@ function Todo(datas, calendar) {
         }
         if (!per) per = 0;
         if (!loc) loc = "";
-        return '<tr><td class="col-md-1"><span class="glyphicon glyphicon-' + begin_icon + '"></span></td><td class="col-md-4"><b>' + this.d.VCALENDAR.VTODO.SUMMARY + '</b></td><td class="col-md-4"><i>' + loc + '</i></td><td class="col-md-1"><span class="badge badge-default">' + per + '%</span></td></tr>';
+        return '<tr onclick="TODOFORM.show(\'' + this.uid + '\', true);"><td class="col-md-1"><span class="glyphicon glyphicon-' + begin_icon + '"></span></td><td class="col-md-4"><b>' + this.d.VCALENDAR.VTODO.SUMMARY + '</b></td><td class="col-md-4"><i>' + loc + '</i></td><td class="col-md-1"><span class="badge badge-default">' + per + '%</span></td></tr>';
     }
 }

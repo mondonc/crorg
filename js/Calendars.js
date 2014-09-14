@@ -70,6 +70,17 @@ function Calendars() {
         }
         return null;
     }
+
+    this.getTodo = function(uid){
+        for (href_idx in this.calendars) {
+            var todo = this.calendars[href_idx].getTodo(uid);
+            if (todo){
+                return todo;
+            }
+        }
+        return null;
+    }
+
 }
 
 // Calendar class
@@ -211,9 +222,19 @@ function Calendar(href, colors) {
                 return this.events[key][uid];
             }
         }
-        console.log("Unable to find " + uid);
+        console.log("Unable to find EVENT " + uid);
         return null;
     }
+
+    this.getTodo = function(uid){
+        if (this.todos.hasOwnProperty(uid)){
+            return this.todos[uid];
+        }
+        console.log("Unable to find TODO " + uid);
+        return null;
+    }
+
+
 
     this._getFCEvents = function(start, events, callback) {
         var key = formatDate(start);
@@ -272,15 +293,14 @@ function Calendar(href, colors) {
     }
 
     this.putTodo = function(todo) {
+        console.log("Putting : ");
+        console.log(todo);
         if (todo.encrypted) {
             ENCRYPTBAR.setTotal(todo.calendar.name, 3);
         }
         todo.calendar.todos[todo.uid] = todo;
         todo.getICS(this.todoPuted);
     }
-
-
-
 
     this.delEvent = function(event) {
         LOADINGBAR.reset();
@@ -289,6 +309,17 @@ function Calendar(href, colors) {
                 console.log("Delete success " + event.uid);
                 delete event.calendar.events[event.calendar.currentDay][event.uid];
                 DASHBOARD.eventDeleteIfExist(event);
+        });
+    }
+
+    this.delTodo = function(todo) {
+        LOADINGBAR.reset();
+        console.log(todo);
+        ajaxDel(todo.calendar.href + "/" + todo.uid + ".ics", "", function (obj, s, r){
+                LOADINGBAR.end();
+                console.log("Delete success " + todo.uid);
+                delete todo.calendar.todos[todo.uid];
+                DASHBOARD.todoDeleteIfExist(todo);
         });
     }
 }

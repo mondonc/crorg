@@ -115,7 +115,7 @@ function eventInList(e, l) {
     return -1;
 }
 
-function newTodo(cat, encrypted) {
+function newTodo(cat) {
     console.log("New Todo in " + cat);
     var sum = document.getElementById("newtodo_" + cat).value;
     var calendar = CALENDARS.find(cat);
@@ -128,8 +128,17 @@ function newTodo(cat, encrypted) {
     t.d["VCALENDAR"]["VTODO"]["UID"] = t.uid;
     t.d["VCALENDAR"]["VTODO"]["SUMMARY"] = sum;
     t.d["VCALENDAR"]["VTODO"]["CATEGORIES"] = cat;
-    t.encrypted = encrypted;
+    t.encrypted = $("#newtodo_form_encrypted").prop("checked");
     calendar.putTodo(t);
 
     //TODOFORM.show({summary: sum}, true);
+}
+
+function newTodoEvent(event) {
+
+    if (event.which == 13 || event.keyCode == 13) {
+        var cat = event.target.id.replace("newtodo_", "");
+        console.log(cat);
+        newTodo(cat);
+    }
 }

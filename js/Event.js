@@ -205,7 +205,7 @@ function Event(datas, calendar, startdate) {
         if (!end) {
             end = moment(e.toDate()).format("HH:mm");
         }
-        return "<tr><td>" + begin + "<br/>" + end + "</td><td><b>" + this.d.VCALENDAR.VEVENT.SUMMARY + "</b></td><td><i>" + this.d.VCALENDAR.VEVENT.DESCRIPTION + "</i></td><td>(" + this.d.VCALENDAR.VEVENT.LOCATION + ")</td></tr>";
+        return "<tr><td class='begin_td'>" + begin + "<br/>" + end + "</td><td><b>" + this.d.VCALENDAR.VEVENT.SUMMARY + "</b></td><td><i>" + this.d.VCALENDAR.VEVENT.DESCRIPTION + "</i></td><td>(" + this.d.VCALENDAR.VEVENT.LOCATION + ")</td></tr>";
 
     }
 

@@ -75,6 +75,7 @@ function EventForm(){
             this.description.val("");
             this.location.val("");
             DELFORM.hideButton();
+            this.encrypt.prop("checked", true);
 
         // Existing Event
         } else {
@@ -91,7 +92,7 @@ function EventForm(){
             } else {
                 this.encrypt.prop("checked", false);
             }
-            DELFORM.init(event);
+            DELFORM.init(event, event.title);
         }
 
         //this.button.click(this.getValues);
