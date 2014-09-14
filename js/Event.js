@@ -193,10 +193,10 @@ function Event(datas, calendar, startdate) {
             end = ' ';
         } else {
             if (!s.isSame(reference, 'day')) {
-                begin = '&#8630';
+                begin = '  &#8630';
             }
             if (!e.isSame(reference, 'day')) {
-                end = '&#8631;';
+                end = '  &#8631;';
             }
         }
         if (!begin) {

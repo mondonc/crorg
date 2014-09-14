@@ -108,8 +108,6 @@ function download2months(){
         day.utc().hour(0);
         CALENDARS.loadAllCalendars(day, true);
     }
-
-
 }
 
 function exit(){}
@@ -121,6 +119,7 @@ $(document).ready(function() {
     //calendar_init();
     calendar_init();
     CALENDARS.load();
+    DASHBOARD.refreshTodo();
     //CALENDARS.load(calendar_init);
     //setInterval(function(){refetchIfneeded()}, 5000);
 

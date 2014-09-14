@@ -34,6 +34,7 @@ function Calendars() {
     this.load = function (){
         getCalendarData(CALDAV_URL, $.proxy(function (datasObj, status, r) {
             calendarList = [];
+            console.log(r.responseXML);
             $(r.responseXML).find('response').each(function(index, element){
                 if ($(element).find("calendar").length >= 1){
                     calendarList.push($(element).find("href").text());
@@ -64,7 +65,6 @@ function Calendars() {
 
     this.find = function(name){
         for (href_idx in this.calendars) {
-            console.log(this.calendars[href_idx].name);
             if (this.calendars[href_idx].name.toUpperCase() == name.toUpperCase())
                 return this.calendars[href_idx];
         }
@@ -294,7 +294,7 @@ function Calendar(href, colors) {
 
     this.putTodo = function(todo) {
         console.log("Putting : ");
-        console.log(todo);
+        //console.log(todo);
         if (todo.encrypted) {
             ENCRYPTBAR.setTotal(todo.calendar.name, 3);
         }
@@ -314,7 +314,7 @@ function Calendar(href, colors) {
 
     this.delTodo = function(todo) {
         LOADINGBAR.reset();
-        console.log(todo);
+        //console.log(todo);
         ajaxDel(todo.calendar.href + "/" + todo.uid + ".ics", "", function (obj, s, r){
                 LOADINGBAR.end();
                 console.log("Delete success " + todo.uid);

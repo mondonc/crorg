@@ -1,4 +1,5 @@
 
+KNOWN_TODO = ["Work", "Familly", "Personal"];
 
 function Dashboard() {
 
@@ -200,10 +201,6 @@ function Dashboard() {
 
     this.clearAll = function () {
 
-        for (cat in KNOWN_TODO) {
-            KNOWN_TODO[cat]["element"].innerHTML = "";
-            KNOWN_TODO[cat]["msg"].innerHTML = "";
-        }
         this.todayEl.innerHTML = "";
         this.todayMsg.innerHTML = "";
         this.tomorowEl.innerHTML = "";

@@ -119,7 +119,8 @@ function newTodo(cat) {
     console.log("New Todo in " + cat);
     var sum = document.getElementById("newtodo_" + cat).value;
     var calendar = CALENDARS.find(cat);
-    if (calendar === null){
+    if (calendar == null){
+        console.log("Calendar not found");
         calendar = CALENDARS.calendars[0];
     }
     var t = new Todo(TODO_TEMPLATE, calendar);
@@ -138,7 +139,6 @@ function newTodoEvent(event) {
 
     if (event.which == 13 || event.keyCode == 13) {
         var cat = event.target.id.replace("newtodo_", "");
-        console.log(cat);
         newTodo(cat);
     }
 }
