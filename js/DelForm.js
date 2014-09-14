@@ -22,14 +22,14 @@ function DelForm(){
         $('#delForm').modal("hide");
         //var e = DELFORM.event.calendar.getEvent(DELFORM.obj.uid);
 
-        if (this.obj.d.VCALENDAR.hasOwnProperty("VTODO")) {
+        if (this.obj.hasOwnProperty("d")) {
             DELFORM.obj.calendar.delTodo(DELFORM.obj);
             DASHBOARD.todoDeleteIfExist(DELFORM.obj);
             DASHBOARD.refreshTodo();
         } else {
             DELFORM.obj.calendar.delEvent(DELFORM.obj);
             DASHBOARD.eventDeleteIfExist(DELFORM.obj);
-            $("#calendar").fullCalendar( 'removeEvents', DELFORM.obj.uid)
+            $("#calendar").fullCalendar( 'removeEvents', DELFORM.obj.id)
             DASHBOARD.refreshToday();
             DASHBOARD.refreshTomorow();
         }

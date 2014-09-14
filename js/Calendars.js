@@ -80,7 +80,6 @@ function Calendars() {
         }
         return null;
     }
-
 }
 
 // Calendar class
